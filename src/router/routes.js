@@ -3,8 +3,21 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') },
+      { path: '', name: 'Home', component: () => import('src/pages/Home.vue') },
+      {
+        path: 'mybook',
+        name: 'MyBook',
+        component: () => import('pages/MyBook.vue'),
+      },
     ],
+  },
+  {
+    path: '/preview',
+    component: () => import('layouts/MainLayout.vue'),
+  },
+  {
+    path: '/readmybook',
+    component: () => import('layouts/MainLayout.vue'),
   },
 
   // Always leave this as last one,
