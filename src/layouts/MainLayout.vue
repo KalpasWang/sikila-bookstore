@@ -1,23 +1,26 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-white text-grey-10" elevated>
-      <q-toolbar>
+      <q-toolbar class="my-container-sm">
 
-        <q-toolbar-title class="font-caveat">
+        <q-toolbar-title>
           <span class="font-caveat">Sikila</span> 電子書坊
         </q-toolbar-title>
 
-      </q-toolbar>
-    </q-header>
-
-      <q-footer bordered class="bg-white">
-        <q-tabs class="text-black" active-bg-color="blue-1" active-color="blue">
+        <q-tabs class="text-black large-only" active-bg-color="blue-1" active-color="blue">
           <q-route-tab :to="{ name: 'Home' }" name="home" icon="home" label="首頁" />
           <q-route-tab :to="{ name: 'MyBook' }" name="mybook" icon="auto_stories" label="我的書庫" />
         </q-tabs>
-      </q-footer>
+      </q-toolbar>
 
-    <q-page-container>
+        <div class="small-only flex justify-end">
+          <q-btn flat :to="{ name: 'Home' }" label="首頁" icon="home" />
+          <q-btn flat :to="{ name: 'MyBook' }" label="我的書庫" icon="auto_stories" />
+        </div>
+
+    </q-header>
+
+    <q-page-container class="bg-grey-2">
       <router-view />
     </q-page-container>
   </q-layout>
@@ -40,5 +43,10 @@ body {
   'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans',
   sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
   'Noto Color Emoji'
+}
+
+.font-caveat {
+  font-weight: 700;
+  font-size: 28px;
 }
 </style>

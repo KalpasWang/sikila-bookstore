@@ -5,3 +5,41 @@
     sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
 }
+
+.my-container-sm {
+  max-width: 100%;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (min-width: 768px) {
+    width: 720px;
+  }
+
+  @media (min-width: 991px) {
+    width: 960px;
+  }
+
+  @media (min-width: $breakpoint-md-min) {
+    width: 1140px;
+  }
+
+  @media (min-width: $breakpoint-lg-min) {
+    width: 1320px;
+  }
+}
+
+.small-only {
+  // @media (max-width: $breakpoint-xs-max) {
+  //   display: block;
+  // }
+  @media (min-width: $breakpoint-sm-min) {
+    display: none;
+  }
+}
+
+.large-only {
+  @media (max-width: $breakpoint-xs-max) {
+    display: none;
+  }
+}
