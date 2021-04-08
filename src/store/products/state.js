@@ -1,9 +1,14 @@
-export default function() {
-  return {
-    products: [],
-    productsMsg: {
-      type: '',
-      message: '',
-    },
-  };
-}
+export default () => ({
+  products: [],
+  productsMsg: {
+    type: '',
+    icon: '',
+    message: '',
+  },
+  productDetails: {},
+  productDetailsMsg: {
+    type: '',
+    icon: '',
+    message: '',
+  },
+});

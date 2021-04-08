@@ -4,5 +4,6 @@
   "semi": true,
   "SingleQuote": true,
   "spaceBeforeFunctionParen": true,
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "printWidth": 80
 }

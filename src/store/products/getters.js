@@ -10,3 +10,11 @@ export function products(state) {
 export function productsMsg(state) {
   return state.productsMsg;
 }
+
+export function productDetails(state) {
+  return state.productDetails;
+}
+
+export function productDetailsMsg(state) {
+  return state.productDetailsMsg;
+}
