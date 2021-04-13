@@ -95,7 +95,7 @@ module.exports = function(/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify'],
+      plugins: ['Notify', 'Loading'],
     },
 
     // animations: 'all', // --- includes all animations
@@ -112,9 +112,9 @@ module.exports = function(/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Sikila 電子書坊',
-        short_name: 'Sikila 電子書坊',
-        description: 'Sikila ebook store',
+        name: '觀音之愛電子書坊',
+        short_name: '觀音之愛電子書坊',
+        description: 'Sikila ebook website',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

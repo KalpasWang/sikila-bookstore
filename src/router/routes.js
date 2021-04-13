@@ -17,12 +17,14 @@ const routes = [
     ],
   },
   {
-    path: '/preview',
-    component: () => import('layouts/MainLayout.vue'),
+    path: '/preview/:id',
+    name: 'Preview',
+    component: () => import('pages/EBook.vue'),
   },
   {
     path: '/readmybook',
-    component: () => import('layouts/MainLayout.vue'),
+    name: 'Read',
+    component: () => import('pages/EBook.vue'),
   },
 
   // Always leave this as last one,

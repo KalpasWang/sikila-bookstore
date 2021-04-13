@@ -2,9 +2,10 @@
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-white text-grey-10" elevated>
       <q-toolbar class="my-container-sm">
-
         <q-toolbar-title>
-          <span class="font-caveat">Sikila</span> 電子書坊
+          <h1 class="font-kai q-my-none text-h6 text-weight-bold">
+            <span class="text-h4 text-primary text-shadow">觀音之愛</span> 電子書坊
+          </h1>
         </q-toolbar-title>
 
         <q-tabs class="text-black large-only" active-bg-color="blue-1" active-color="blue">
@@ -13,11 +14,10 @@
         </q-tabs>
       </q-toolbar>
 
-        <div class="small-only flex justify-end">
-          <q-btn flat :to="{ name: 'Home' }" label="首頁" icon="home" />
-          <q-btn flat :to="{ name: 'MyBook' }" label="我的書庫" icon="auto_stories" />
-        </div>
-
+      <div class="small-only flex justify-end">
+        <q-btn flat :to="{ name: 'Home' }" label="首頁" icon="home" />
+        <q-btn flat :to="{ name: 'MyBook' }" label="我的書庫" icon="auto_stories" />
+      </div>
     </q-header>
 
     <q-page-container class="bg-grey-2">
@@ -39,10 +39,9 @@ export default {
 
 <style lang="scss">
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans TC',
-  'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans',
-  sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-  'Noto Color Emoji'
+  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .font-caveat {

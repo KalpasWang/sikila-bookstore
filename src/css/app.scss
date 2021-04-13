@@ -1,9 +1,16 @@
 // app global css in SCSS form
-.font-caveat {
-  font-family: 'Caveat', -apple-system, BlinkMacSystemFont, 'Noto Sans TC',
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans',
-    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
+@import url(https://fonts.googleapis.com/earlyaccess/cwtexkai.css);
+
+.font-kai {
+  font-family: 'cwTeXKai', serif !important;
+}
+
+.text-shadow {
+  text-shadow: -1px 0 grey, 0 1px grey, 1px 0 grey, 0 -1px grey;
+}
+
+.p-0 {
+  padding: 0 !important;
 }
 
 .paragraph {
@@ -42,7 +49,7 @@
 
 .text-h4-xs {
   @media (max-width: $breakpoint-xs-max) {
-        font-size: 2.125rem;
+    font-size: 2.125rem;
     font-weight: 400;
     line-height: 2.5rem;
     letter-spacing: 0.00735em;

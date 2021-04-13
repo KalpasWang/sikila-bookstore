@@ -5,7 +5,7 @@ export function someAction (context) {
 import { api } from 'boot/axios';
 
 export function fetchProducts({ commit }) {
-  api
+  return api
     .get('/products')
     .then((res) => {
       if (res.status === 200) {
@@ -27,8 +27,8 @@ export function fetchProducts({ commit }) {
     });
 }
 
-export function fetchProductsDetails({ commit }, id) {
-  api
+export async function fetchProductsDetails({ commit }, id) {
+  return api
     .get(`/products?id=${id}`)
     .then((res) => {
       if (res.status === 200) {

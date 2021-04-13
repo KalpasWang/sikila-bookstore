@@ -7,7 +7,10 @@
     <div v-if="loading" class="flex justify-center q-pt-lg">
       <q-spinner class="q-mx-auto" color="primary" size="3em" :thickness="10" />
     </div>
-    <h6 v-else-if="productDetailsMsg.type === 'negative'">{{ productDetailsMsg.message }}</h6>
+    <h6
+      v-else-if="productDetailsMsg.type === 'negative'"
+      class="text-center"
+    >{{ productDetailsMsg.message }}</h6>
     <q-card v-else class="my-card" bordered>
       <q-card-section horizontal>
         <q-card-section class="px-1-xs">
@@ -19,8 +22,13 @@
           <div class="text-subtitle1">{{ productDetails.author }} 編著</div>
           <div class="text-subtitle1">{{ productDetails.price | currency }}</div>
           <q-card-actions class="q-mt-lg col-grow justify-end items-end q-gutter-sm">
-            <q-btn rounded outline color="accent">免費試閱</q-btn>
-            <q-btn rounded outline color="primary">加入購物車</q-btn>
+            <q-btn
+              :to="{ name: 'Preview', params: { id: productDetails.id }}"
+              outline
+              size="lg"
+              color="accent"
+            >免費試閱</q-btn>
+            <q-btn outline size="lg" color="primary">購買</q-btn>
           </q-card-actions>
         </q-card-section>
       </q-card-section>
@@ -54,7 +62,7 @@ export default {
     productDetailsMsg(value) {
       if (value.type) {
         this.$q.notify({
-          position: 'top',
+          position: 'center',
           icon: value.icon,
           type: value.type,
           message: value.message,
@@ -62,10 +70,11 @@ export default {
       }
     },
   },
-  created() {
+  mounted() {
+    this.loading = true;
     this.$store
       .dispatch('fetchProductsDetails', this.$route.params.id)
-      .finally(() => {
+      .then(() => {
         this.loading = false;
       });
   },
