@@ -7,7 +7,7 @@
           <q-toolbar>
             <q-btn @click="$router.go(-1)" flat round dense icon="arrow_back" />
             <q-toolbar-title>{{ productDetails.title }}</q-toolbar-title>
-            <q-btn @click="showToc = !showToc" flat round dense icon="toc" />
+            <q-btn @click="showToc = !showToc" flat dense icon="toc" label="目錄" />
           </q-toolbar>
         </q-header>
       </q-slide-transition>
@@ -16,42 +16,57 @@
       <q-slide-transition :duration="300">
         <q-footer v-show="showMenu" elevated>
           <!-- 選單內容 -->
-          <q-tab-panels v-model="setting" animated class="bg-grey-1 text-black">
+          <q-tab-panels v-model="setting" class="bg-grey-1 text-black">
+            <!-- 進度條 -->
             <q-tab-panel name="progress">
-              <q-slider v-model="progress" :min="0" :max="50" />
+              <div class="row">
+                <div class="col-10">
+                  <q-slider v-model="progressModal" :min="0" :max="100" :step="0.1" />
+                </div>
+                <div class="col">{{ progress }}%</div>
+              </div>
             </q-tab-panel>
+            <!-- 文字大小 -->
             <q-tab-panel name="text-size">
-              <q-slider v-model="fontSize" :min="16" :max="36" />
-            </q-tab-panel>
-            <q-tab-panel name="theme">
-              <div class="row q-col-gutter-md">
-                <div class="col">
-                  <q-btn
-                    color="grey-2"
-                    text-color="black"
-                    class="fit text-h6"
-                    no-caps
-                    label="Light"
-                  />
+              <div class="text-subtitle1">{{ fontSize }}</div>
+              <div class="row">
+                <div class="col-1">
+                  <q-icon name="remove" class="text-primary" />
                 </div>
-                <div class="col">
-                  <q-btn color="grey-2" text-color="black" size="xl" no-caps label="Light" />
+                <div class="col-10">
+                  <q-slider v-model="fontSizeModal" :min="16" :max="36" />
                 </div>
-                <div class="col">
-                  <q-btn color="grey-2" text-color="black" size="xl" no-caps label="Light" />
+                <div class="col-1">
+                  <q-icon name="add" class="text-primary" />
                 </div>
               </div>
             </q-tab-panel>
+            <!-- 樣式主題 -->
+            <q-tab-panel name="theme">
+              <div class="row q-col-gutter-md">
+                <div class="col" v-for="(item, index) in themeList" :key="item.name">
+                  <q-btn
+                    @click="themeIndexModal = index"
+                    :color="item.bgClass"
+                    :text-color="item.textClass"
+                    class="fit text-h6"
+                    no-caps
+                    :label="item.label"
+                  />
+                </div>
+              </div>
+            </q-tab-panel>
+            <!-- 閱讀模式 -->
             <q-tab-panel name="mode">
-              <q-tabs v-model="mode" class="text-teal">
-                <q-tab name="scroll" icon="text_rotate_vertical" label="捲動模式" />
+              <q-tabs v-model="modeModal" class="text-teal">
+                <q-tab name="scrolled" icon="text_rotate_vertical" label="捲動模式" />
                 <q-tab name="paginated" icon="menu_book" label="翻頁模式" />
               </q-tabs>
             </q-tab-panel>
           </q-tab-panels>
 
           <q-separator />
-          <!-- 選單 -->
+          <!-- 主選單 -->
           <q-tabs
             v-model="setting"
             dense
@@ -67,9 +82,30 @@
         </q-footer>
       </q-slide-transition>
 
-      <q-drawer v-model="showToc" :width="200" :breakpoint="600" bordered content-class="bg-grey-3">
+      <!-- 目錄 -->
+      <q-drawer
+        v-model="showToc"
+        :width="tocWidth"
+        :breakpoint="600"
+        bordered
+        overlay
+        elevated
+        content-class="bg-grey-3"
+      >
         <q-scroll-area class="fit">
-          <q-tree :nodes="toc" node-key="label" no-connectors :expanded.sync="expandedTocItem" />
+          <h3 class="text-h6 q-pl-sm align-middle">
+            <q-btn @click="showToc = false" icon="chevron_left" flat round dense />
+            {{ productDetails.title }}
+          </h3>
+          <q-separator />
+          <q-tree
+            :nodes="toc"
+            node-key="href"
+            children-key="subitems"
+            :selected.sync="selectedToc"
+            no-connectors
+            default-expand-all
+          />
         </q-scroll-area>
       </q-drawer>
 
@@ -79,13 +115,13 @@
           <div id="read"></div>
           <div class="absolute-full row">
             <div class="col" @click="prevPage"></div>
-            <div class="col-7" @click="toggleTitleAndMenu"></div>
+            <div class="col-7" @click="toggleMenu"></div>
             <div class="col" @click="nextPage"></div>
           </div>
           <div
             v-if="errorMsg.length > 0"
             class="full-screen z-top bg-white flex justify-center items-center text-h6"
-            @click="toggleTitleAndMenu"
+            @click="toggleMenu"
           >{{ errorMsg }}</div>
         </q-page>
       </q-page-container>
@@ -104,57 +140,97 @@ export default {
   data() {
     return {
       bookLink: '',
+      // epubjs 相關資料
       book: null,
       rendition: null,
       locations: null,
       navigation: null,
       toc: [],
-      tocTree: [],
-      expandedTocItem: [],
+      selectedToc: '',
+      errorMsg: '',
+      // 控制選單與目錄的顯示與隱藏
       showMenu: false,
       showToc: false,
-      errorMsg: '',
-      bookAvailable: false,
+      // user 可設定的資訊
       setting: 'progress',
       progress: 0,
       fontSize: 20,
       mode: 'paginated',
-      theme: 'light',
-      // defaultTheme: 0,
-      // themes: null,
+      themeIndex: 0,
+      // 背景主題選項
       themeList: [
         {
           name: 'light',
-          style: {
-            body: {
-              color: '#000',
-              background: '#eef2f6',
-            },
-          },
+          label: 'Light',
+          color: '#1d1d1d',
+          background: '#f5f5f5',
+          bgClass: 'grey-2',
+          textClass: 'dark',
+        },
+        {
+          name: 'brown',
+          label: 'Brown',
+          color: '#1d1d1d',
+          background: '#d7ccc8',
+          bgClass: 'brown-2',
+          textClass: 'dark',
         },
         {
           name: 'dark',
-          style: {
-            body: {
-              color: '#eef2f6',
-              background: '#212529',
-            },
-          },
-        },
-        {
-          name: 'gold',
-          style: {
-            body: {
-              color: '#000',
-              background: '#fcd581',
-            },
-          },
+          label: 'Dark',
+          color: '#eeeeee',
+          background: '#212121',
+          bgClass: 'grey-10',
+          textClass: 'grey-3',
         },
       ],
     };
   },
   computed: {
     ...mapGetters(['productDetails', 'productDetailsMsg']),
+    tocWidth() {
+      const maxWidth = 500;
+      const width = window.innerWidth * 0.7;
+      return width > maxWidth ? maxWidth : width;
+    },
+    progressModal: {
+      get() {
+        return this.progress;
+      },
+      set(value) {
+        if (value !== this.progress) {
+          this.setProgress(value);
+          this.progress = value;
+        }
+      },
+    },
+    fontSizeModal: {
+      get() {
+        return this.fontSize;
+      },
+      set(value) {
+        this.setFontSize(value);
+        this.fontSize = value;
+      },
+    },
+    themeIndexModal: {
+      get() {
+        return this.themeIndex;
+      },
+      set(value) {
+        this.setTheme(value);
+        this.themeIndex = value;
+      },
+    },
+    modeModal: {
+      get() {
+        return this.mode;
+      },
+      set(value) {
+        this.setMode(value);
+        this.mode = value;
+      },
+    },
   },
   watch: {
     productDetailsMsg(value) {
@@ -177,45 +253,29 @@ export default {
         });
       }
     },
-    toc(value) {
+    selectedToc(value) {
       if (value) {
-        this.generateTocTree();
+        this.jumpTo(value);
       }
     },
   },
   methods: {
-    // showToc() {
-    //   this.ifShowContent = true;
-    // },
     // 跳轉到指定的位置
-    // generateTocTree(list, depth = 0) {
-    //   list.map(item => {
-
-    //   })
-    // for (let item of list) {
-    //   if (!depth) {
-    //     depth = 0;
-    //     item = { ...item, depth: 0, padding: 'pl-3' };
-    //   } else {
-    //     item = { ...item, depth, padding: `pl-${depth + 3}` };
-    //   }
-    //   this.tocList.push(item);
-    //   if (item.subitems) {
-    //     this.getToc(item.subitems, depth + 1);
-    //   }
-    // }
-    // },
     jumpTo(href) {
       this.rendition.display(href);
-      this.hideTitleAndMenuShow();
+      this.hideMenu();
     },
-    hideTitleAndMenuShow() {
+    hideMenu() {
       this.showMenu = false;
-      this.ifShowContent = false;
-      this.$refs.menuBar.hideSetting();
+      this.showToc = false;
     },
-    // progress bar 的數值 (0-100)
-    onProgressChange(progress) {
+    toggleMenu() {
+      this.showMenu = !this.showMenu;
+      if (!this.showMenu) {
+        this.showToc = false;
+      }
+    },
+    setProgress(progress) {
       const pct = progress / 100;
       let location = pct > 0 ? this.locations.cfiFromPercentage(pct) : 0;
       if (pct === 1) {
@@ -224,68 +284,61 @@ export default {
       this.rendition.display(location);
     },
     setTheme(index) {
-      // this.themes.select(this.themeList[index].name);
       const theme = this.themeList[index];
-      this.rendition.themes.override('color', theme.style.body.color, true);
-      this.rendition.themes.override(
-        'background',
-        theme.style.body.background,
-        true
-      );
-      this.defaultTheme = index;
-    },
-    registerTheme() {
-      this.themeList.forEach((theme) => {
-        this.rendition.themes.register(theme.name, theme.style);
-      });
+      this.rendition.themes.override('color', theme.color, true);
+      this.rendition.themes.override('background', theme.background, true);
     },
     setFontSize(fontSize) {
-      this.defaultFontSize = fontSize;
-      if (this.themes) {
-        this.themes.fontSize(`${fontSize}px`);
+      if (this.rendition.themes) {
+        this.rendition.themes.fontSize(`${fontSize}px`);
       }
     },
-    toggleTitleAndMenu() {
-      this.showMenu = !this.showMenu;
-      if (!this.showMenu) {
-        this.$refs.menuBar.hideSetting();
-        this.ifShowContent = false;
+    setMode(flow) {
+      if (this.book) {
+        const manager = flow === 'paginated' ? 'default' : 'continuous';
+        const { cfi } = this.rendition.location.end;
+        this.rendition.destroy();
+        this.rendition = this.book.renderTo('read', {
+          manager,
+          flow,
+          width: '100%',
+        });
+        this.rendition.display(cfi);
       }
     },
     prevPage() {
-      this.showMenu = false;
-      if (this.ifShowContent) {
-        this.ifShowContent = false;
-      } else if (this.rendition) {
+      // 如果目錄沒有打開，就隱藏選單往前一頁
+      // 如果目錄被打開，就只隱藏目錄跟選單
+      if (!this.showToc) {
         this.rendition.prev().then(() => {
-          // 控制 progress bar 往後
           if (this.locations) {
             const currentLocation = this.rendition.currentLocation();
-            const progress = Math.ceil(
-              this.locations.percentageFromCfi(currentLocation.start.cfi) * 100
+            const progress = this.locations.percentageFromCfi(
+              currentLocation.start.cfi
             );
-            this.$refs.menuBar.setProgress(progress);
+            this.progress = progress.toFixed(1);
           }
         });
       }
+      this.hideMenu();
     },
     nextPage() {
-      this.showMenu = false;
-      if (this.ifShowContent) {
-        this.ifShowContent = false;
-      } else if (this.rendition) {
+      // 如果目錄沒有打開，就隱藏選單前往下一頁
+      // 如果目錄被打開，就只隱藏目錄跟選單
+      if (!this.showToc) {
         this.rendition.next().then(() => {
-          // 控制 progress bar 往前
           if (this.locations) {
             const currentLocation = this.rendition.currentLocation();
-            const progress = Math.ceil(
-              this.locations.percentageFromCfi(currentLocation.start.cfi) * 100
+            const progress = this.locations.percentageFromCfi(
+              currentLocation.start.cfi
             );
-            this.$refs.menuBar.setProgress(progress);
+            this.progress = progress.toFixed(1);
           }
         });
       }
+      this.hideMenu();
     },
+    // 當視窗被 resize, resize 目前的畫面
     resizeEpub() {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -297,30 +350,21 @@ export default {
       this.book = new Epub(this.bookLink);
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
-        width: 'calc(100%)',
+        width: '100%',
         height: '100vh',
       });
       this.rendition.display();
-      this.themes = this.rendition.themes;
-      this.setFontSize(this.defaultFontSize);
-      // this.registerTheme();
-      this.setTheme(this.defaultTheme);
+      this.setFontSize(this.fontSize);
+      this.setTheme(this.themeIndex);
       // 產生 epub 的 位置與導覽物件
-      return (
-        this.book.ready
-          .then(() => this.book.locations.generate())
-          // .then(() => this.book.loaded.navigation)
-          .then(() => {
-            this.toc = this.book.navigation.toc;
-            this.navigation = this.book.navigation;
-            this.locations = this.book.locations;
-            window.addEventListener('resize', this.resizeEpub);
-            this.bookAvailable = true;
-          })
-      );
-      // .catch(() => {
-      //   this.errorMsg = '無法開啟此書';
-      // });
+      return this.book.ready
+        .then(() => this.book.locations.generate())
+        .then(() => {
+          this.toc = this.book.navigation.toc;
+          this.navigation = this.book.navigation;
+          this.locations = this.book.locations;
+          window.addEventListener('resize', this.resizeEpub);
+        });
     },
   },
   async mounted() {

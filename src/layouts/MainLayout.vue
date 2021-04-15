@@ -3,7 +3,7 @@
     <q-header class="bg-white text-grey-10" elevated>
       <q-toolbar class="my-container-sm">
         <q-toolbar-title>
-          <h1 class="font-kai q-my-none text-h6 text-weight-bold">
+          <h1 class="q-my-none text-h6 text-weight-bold">
             <span class="text-h4 text-primary text-shadow">觀音之愛</span> 電子書坊
           </h1>
         </q-toolbar-title>

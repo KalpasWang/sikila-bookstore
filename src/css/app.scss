@@ -1,12 +1,11 @@
 // app global css in SCSS form
-@import url(https://fonts.googleapis.com/earlyaccess/cwtexkai.css);
-
-.font-kai {
-  font-family: 'cwTeXKai', serif !important;
-}
 
 .text-shadow {
-  text-shadow: -1px 0 grey, 0 1px grey, 1px 0 grey, 0 -1px grey;
+  text-shadow: -1px 0 lightgrey, 0 1px lightgrey, 1px 0 lightgrey, 0 -1px lightgrey;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .p-0 {
