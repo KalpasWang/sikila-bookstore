@@ -1,11 +1,21 @@
 // app global css in SCSS form
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans TC', 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
 
 .text-shadow {
-  text-shadow: -1px 0 lightgrey, 0 1px lightgrey, 1px 0 lightgrey, 0 -1px lightgrey;
+  text-shadow: -1px 0 lightgrey, 0 1px lightgrey, 1px 0 lightgrey,
+    0 -1px lightgrey;
 }
 
 .align-middle {
   vertical-align: middle;
+}
+
+.maxh100 {
+  max-height: 100%;
 }
 
 .p-0 {

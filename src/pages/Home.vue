@@ -64,18 +64,18 @@ export default {
   computed: {
     ...mapGetters(['products', 'productsMsg']),
   },
-  watch: {
-    productsMsg(value) {
-      if (value.type) {
-        this.$q.notify({
-          position: 'center',
-          icon: value.icon,
-          type: value.type,
-          message: value.message,
-        });
-      }
-    },
-  },
+  // watch: {
+  //   productsMsg(value) {
+  //     if (value.type) {
+  //       this.$q.notify({
+  //         position: 'center',
+  //         icon: value.icon,
+  //         type: value.type,
+  //         message: value.message,
+  //       });
+  //     }
+  //   },
+  // },
   mounted() {
     this.loading = true;
     this.$store.dispatch('fetchProducts').then(() => {

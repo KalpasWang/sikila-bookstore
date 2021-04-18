@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden window-height">
+  <div class="window-height">
     <q-layout view="lHh lpr lFf" container class="shadow-2 rounded-borders">
       <!-- header -->
       <q-slide-transition :duration="300">
@@ -7,7 +7,6 @@
           <q-toolbar>
             <q-btn @click="$router.go(-1)" flat round dense icon="arrow_back" />
             <q-toolbar-title>{{ productDetails.title }}</q-toolbar-title>
-            <q-btn @click="showToc = !showToc" flat dense icon="toc" label="目錄" />
           </q-toolbar>
         </q-header>
       </q-slide-transition>
@@ -23,21 +22,21 @@
                 <div class="col-10">
                   <q-slider v-model="progressModal" :min="0" :max="100" :step="0.1" />
                 </div>
-                <div class="col">{{ progress }}%</div>
+                <div class="col flex flex-center text-subtitle1">{{ progress.toFixed(1) }}%</div>
               </div>
             </q-tab-panel>
             <!-- 文字大小 -->
             <q-tab-panel name="text-size">
-              <div class="text-subtitle1">{{ fontSize }}</div>
+              <div class="text-h6 text-center">{{ fontSize }}</div>
               <div class="row">
-                <div class="col-1">
-                  <q-icon name="remove" class="text-primary" />
+                <div class="col-1 flex flex-center">
+                  <q-icon name="remove" size="md" class="text-dark" />
                 </div>
                 <div class="col-10">
                   <q-slider v-model="fontSizeModal" :min="16" :max="36" />
                 </div>
-                <div class="col-1">
-                  <q-icon name="add" class="text-primary" />
+                <div class="col-1 flex flex-center">
+                  <q-icon name="add" size="md" class="text-dark" />
                 </div>
               </div>
             </q-tab-panel>
@@ -56,12 +55,9 @@
                 </div>
               </div>
             </q-tab-panel>
-            <!-- 閱讀模式 -->
-            <q-tab-panel name="mode">
-              <q-tabs v-model="modeModal" class="text-teal">
-                <q-tab name="scrolled" icon="text_rotate_vertical" label="捲動模式" />
-                <q-tab name="paginated" icon="menu_book" label="翻頁模式" />
-              </q-tabs>
+            <!-- 目錄（空白） -->
+            <q-tab-panel name="toc">
+              <div></div>
             </q-tab-panel>
           </q-tab-panels>
 
@@ -77,7 +73,7 @@
             <q-tab name="progress" label="進度" icon="swap_horiz" />
             <q-tab name="text-size" label="文字大小" icon="format_size" />
             <q-tab name="theme" label="主題" icon="palette" />
-            <q-tab name="mode" label="閱讀模式" icon="library_books" />
+            <q-tab @click="showToc = !showToc" name="toc" label="目錄" icon="toc" />
           </q-tabs>
         </q-footer>
       </q-slide-transition>
@@ -111,18 +107,13 @@
 
       <!-- 主頁(電子書內容) -->
       <q-page-container class="p-0">
-        <q-page class="relative-position overflow-hidden window-height">
-          <div id="read"></div>
+        <q-page class="position-relative overflow-hidden">
+          <div id="read" :class="isScrollable"></div>
           <div class="absolute-full row">
             <div class="col" @click="prevPage"></div>
             <div class="col-7" @click="toggleMenu"></div>
             <div class="col" @click="nextPage"></div>
           </div>
-          <div
-            v-if="errorMsg.length > 0"
-            class="full-screen z-top bg-white flex justify-center items-center text-h6"
-            @click="toggleMenu"
-          >{{ errorMsg }}</div>
         </q-page>
       </q-page-container>
     </q-layout>
@@ -155,7 +146,6 @@ export default {
       setting: 'progress',
       progress: 0,
       fontSize: 20,
-      mode: 'paginated',
       themeIndex: 0,
       // 背景主題選項
       themeList: [
@@ -193,9 +183,12 @@ export default {
       const width = window.innerWidth * 0.7;
       return width > maxWidth ? maxWidth : width;
     },
+    isScrollable() {
+      return this.mode === 'scrolled' ? 'scroll' : 'overflow-hidden';
+    },
     progressModal: {
       get() {
-        return this.progress;
+        return parseFloat(this.progress.toFixed(1));
       },
       set(value) {
         if (value !== this.progress) {
@@ -222,15 +215,6 @@ export default {
         this.themeIndex = value;
       },
     },
-    modeModal: {
-      get() {
-        return this.mode;
-      },
-      set(value) {
-        this.setMode(value);
-        this.mode = value;
-      },
-    },
   },
   watch: {
     productDetailsMsg(value) {
@@ -245,10 +229,8 @@ export default {
     },
     errorMsg(value) {
       if (value.length > 0) {
-        this.$q.notify({
-          position: 'center',
-          icon: 'info',
-          type: 'negative',
+        this.$q.dialog({
+          title: '發生錯誤',
           message: value,
         });
       }
@@ -293,19 +275,6 @@ export default {
         this.rendition.themes.fontSize(`${fontSize}px`);
       }
     },
-    setMode(flow) {
-      if (this.book) {
-        const manager = flow === 'paginated' ? 'default' : 'continuous';
-        const { cfi } = this.rendition.location.end;
-        this.rendition.destroy();
-        this.rendition = this.book.renderTo('read', {
-          manager,
-          flow,
-          width: '100%',
-        });
-        this.rendition.display(cfi);
-      }
-    },
     prevPage() {
       // 如果目錄沒有打開，就隱藏選單往前一頁
       // 如果目錄被打開，就只隱藏目錄跟選單
@@ -316,7 +285,7 @@ export default {
             const progress = this.locations.percentageFromCfi(
               currentLocation.start.cfi
             );
-            this.progress = progress.toFixed(1);
+            this.progress = progress;
           }
         });
       }
@@ -332,7 +301,7 @@ export default {
             const progress = this.locations.percentageFromCfi(
               currentLocation.start.cfi
             );
-            this.progress = progress.toFixed(1);
+            this.progress = progress;
           }
         });
       }
@@ -348,12 +317,17 @@ export default {
     async showEpub() {
       // 生成 Ebook
       this.book = new Epub(this.bookLink);
+      let displayRange;
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
         width: '100%',
         height: '100vh',
       });
-      this.rendition.display();
+      if (displayRange) {
+        this.rendition.display(displayRange);
+      } else {
+        this.rendition.display();
+      }
       this.setFontSize(this.fontSize);
       this.setTheme(this.themeIndex);
       // 產生 epub 的 位置與導覽物件
@@ -365,6 +339,13 @@ export default {
           this.locations = this.book.locations;
           window.addEventListener('resize', this.resizeEpub);
         });
+    },
+    makeRangeCfi(startCfi, endCfi) {
+      const cfiBase = startCfi.replace(/!.*/, '');
+      const cfiStart = startCfi.replace(/.*!/, '').replace(/\)$/, '');
+      const cfiEnd = endCfi.replace(/.*!/, '').replace(/\)$/, '');
+      const cfiRange = `${cfiBase}!,${cfiStart},${cfiEnd})`;
+      return cfiRange;
     },
   },
   async mounted() {

@@ -30,22 +30,7 @@
 export default {
   name: 'MainLayout',
   data() {
-    return {
-      leftDrawerOpen: false,
-    };
+    return {};
   },
 };
 </script>
-
-<style lang="scss">
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
-.font-caveat {
-  font-weight: 700;
-  font-size: 28px;
-}
-</style>
