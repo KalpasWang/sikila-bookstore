@@ -1,11 +1,24 @@
 <template>
   <q-page class="my-container-sm" padding>
-    <q-toolbar class="q-mt-md">
-      <q-toolbar-title>
-        <q-btn rounded color="secondary" label="購物車" icon="shopping_cart" />
-      </q-toolbar-title>
-    </q-toolbar>
-    <div class="row q-mt-md q-col-gutter-md">
+    <div class="banner-area q-my-md q-gutter-sm">
+      <q-banner rounded class="bg-purple-8 text-white">
+        We can't find your saved recipes until you sign in.
+        <template v-slot:action>
+          <q-btn flat color="white" label="Continue as a Guest" />
+          <q-btn flat color="white" label="Sign in" />
+        </template>
+      </q-banner>
+      <q-banner rounded class="bg-grey-3">
+        <template v-slot:avatar>
+          <img src="https://cdn.quasar.dev/img/mountains.jpg" style="width: 100px; height: 64px" />
+        </template>
+        Could not retrieve travel data.
+        <template v-slot:action>
+          <q-btn flat label="Retry" />
+        </template>
+      </q-banner>
+    </div>
+    <div class="row q-col-gutter-md">
       <div v-if="loading" class="q-mx-auto">
         <q-spinner color="primary" size="3em" :thickness="10" />
       </div>
@@ -39,10 +52,9 @@
             <div class="q-gutter-x-sm">
               <q-btn
                 :to="{ name: 'ProductDetails', params: { id: item.id } }"
-                outline
+                unelevated
                 color="primary"
               >查看更多</q-btn>
-              <q-btn outline color="secondary">購買</q-btn>
             </div>
           </q-card-actions>
         </q-card>
@@ -64,23 +76,16 @@ export default {
   computed: {
     ...mapGetters(['products', 'productsMsg']),
   },
-  // watch: {
-  //   productsMsg(value) {
-  //     if (value.type) {
-  //       this.$q.notify({
-  //         position: 'center',
-  //         icon: value.icon,
-  //         type: value.type,
-  //         message: value.message,
-  //       });
-  //     }
-  //   },
-  // },
   mounted() {
     this.loading = true;
-    this.$store.dispatch('fetchProducts').then(() => {
-      this.loading = false;
-    });
+    this.$store.dispatch('fetchProducts');
+    if (this.productsMsg.length > 0) {
+      this.$q.dialog({
+        title: '發生錯誤',
+        message: this.productsMsg,
+      });
+    }
+    this.loading = false;
   },
 };
 </script>

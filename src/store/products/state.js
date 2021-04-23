@@ -1,14 +1,6 @@
 export default () => ({
   products: [],
-  productsMsg: {
-    type: '',
-    icon: '',
-    message: '',
-  },
+  productsMsg: '',
   productDetails: {},
-  productDetailsMsg: {
-    type: '',
-    icon: '',
-    message: '',
-  },
+  productDetailsMsg: '',
 });

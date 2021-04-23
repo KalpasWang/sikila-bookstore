@@ -13,6 +13,17 @@ const routes = [
         path: 'mybook',
         name: 'MyBook',
         component: () => import('pages/MyBook.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'login',
+        name: 'Login',
+        component: () => import('pages/Login.vue'),
+      },
+      {
+        path: 'signup',
+        name: 'Signup',
+        component: () => import('pages/Signup.vue'),
       },
     ],
   },
@@ -22,9 +33,10 @@ const routes = [
     component: () => import('pages/EBook.vue'),
   },
   {
-    path: '/readmybook',
+    path: '/readmybook/:id',
     name: 'Read',
     component: () => import('pages/EBook.vue'),
+    meta: { requiresAuth: true },
   },
 
   // Always leave this as last one,

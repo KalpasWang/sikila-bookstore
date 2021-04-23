@@ -20,9 +20,11 @@
             <q-tab-panel name="progress">
               <div class="row">
                 <div class="col-10">
-                  <q-slider v-model="progressModal" :min="0" :max="100" :step="0.1" />
+                  <q-slider v-model="progressModel" :min="0" :max="100" :step="0.1" />
                 </div>
-                <div class="col flex flex-center text-subtitle1">{{ progress.toFixed(1) }}%</div>
+                <div
+                  class="col flex flex-center text-subtitle1 text-weight-light"
+                >{{ progress.toFixed(1) }}%</div>
               </div>
             </q-tab-panel>
             <!-- 文字大小 -->
@@ -33,7 +35,7 @@
                   <q-icon name="remove" size="md" class="text-dark" />
                 </div>
                 <div class="col-10">
-                  <q-slider v-model="fontSizeModal" :min="16" :max="36" />
+                  <q-slider v-model="fontSizeModel" :min="16" :max="36" />
                 </div>
                 <div class="col-1 flex flex-center">
                   <q-icon name="add" size="md" class="text-dark" />
@@ -45,9 +47,10 @@
               <div class="row q-col-gutter-md">
                 <div class="col" v-for="(item, index) in themeList" :key="item.name">
                   <q-btn
-                    @click="themeIndexModal = index"
+                    @click="themeIndexModel = index"
                     :color="item.bgClass"
                     :text-color="item.textClass"
+                    :class="themeIndex === index ? 'border-primary' : ''"
                     class="fit text-h6"
                     no-caps
                     :label="item.label"
@@ -108,7 +111,7 @@
       <!-- 主頁(電子書內容) -->
       <q-page-container class="p-0">
         <q-page class="position-relative overflow-hidden">
-          <div id="read" :class="isScrollable"></div>
+          <div id="read" class="overflow-hidden"></div>
           <div class="absolute-full row">
             <div class="col" @click="prevPage"></div>
             <div class="col-7" @click="toggleMenu"></div>
@@ -138,7 +141,6 @@ export default {
       navigation: null,
       toc: [],
       selectedToc: '',
-      errorMsg: '',
       // 控制選單與目錄的顯示與隱藏
       showMenu: false,
       showToc: false,
@@ -177,27 +179,32 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['productDetails', 'productDetailsMsg']),
+    ...mapGetters([
+      'userData',
+      'userDataMsg',
+      'productDetails',
+      'productDetailsMsg',
+    ]),
     tocWidth() {
       const maxWidth = 500;
       const width = window.innerWidth * 0.7;
       return width > maxWidth ? maxWidth : width;
     },
-    isScrollable() {
-      return this.mode === 'scrolled' ? 'scroll' : 'overflow-hidden';
-    },
-    progressModal: {
+    progressModel: {
       get() {
         return parseFloat(this.progress.toFixed(1));
       },
       set(value) {
+        if (value > 100) {
+          value = 100;
+        }
         if (value !== this.progress) {
           this.setProgress(value);
           this.progress = value;
         }
       },
     },
-    fontSizeModal: {
+    fontSizeModel: {
       get() {
         return this.fontSize;
       },
@@ -206,7 +213,7 @@ export default {
         this.fontSize = value;
       },
     },
-    themeIndexModal: {
+    themeIndexModel: {
       get() {
         return this.themeIndex;
       },
@@ -217,24 +224,6 @@ export default {
     },
   },
   watch: {
-    productDetailsMsg(value) {
-      if (value.type) {
-        this.$q.notify({
-          position: 'center',
-          icon: value.icon,
-          type: value.type,
-          message: value.message,
-        });
-      }
-    },
-    errorMsg(value) {
-      if (value.length > 0) {
-        this.$q.dialog({
-          title: '發生錯誤',
-          message: value,
-        });
-      }
-    },
     selectedToc(value) {
       if (value) {
         this.jumpTo(value);
@@ -285,7 +274,7 @@ export default {
             const progress = this.locations.percentageFromCfi(
               currentLocation.start.cfi
             );
-            this.progress = progress;
+            this.progress = progress * 100;
           }
         });
       }
@@ -301,7 +290,7 @@ export default {
             const progress = this.locations.percentageFromCfi(
               currentLocation.start.cfi
             );
-            this.progress = progress;
+            this.progress = progress * 100;
           }
         });
       }
@@ -349,29 +338,54 @@ export default {
     },
   },
   async mounted() {
-    let type = '';
-    if (this.$route.name === 'Preview') {
-      type = 'preview';
-    } else if (this.$route.name === 'Read') {
-      type = 'read';
-    } else {
-      this.$router.push({ name: 'Home' });
-    }
-
     this.$q.loading.show();
-    try {
-      await this.$store.dispatch('fetchProductsDetails', this.$route.params.id);
-      if (this.productDetails.id) {
-        this.bookLink = this.productDetails[type];
+
+    if (this.$route.name === 'Read') {
+      try {
+        await this.$store.dispatch('fetchUserData', '00001');
+        if (this.userDataMsg.length > 0) {
+          throw new Error(this.userDataMsg);
+        }
+        this.fontSize = this.userData.fontSize;
+        this.themeIndex = this.userData.theme;
+        const vm = this;
+        const book = this.userData.books.find(
+          (item) => item.id === vm.$route.params.id
+        );
+        if (!book || !book.read) {
+          throw new Error('找不到這本書');
+        }
+        this.bookLink = book.read;
+        this.progress = book.progress || 0;
+        await this.showEpub();
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      } finally {
+        this.$q.loading.hide();
+      }
+    } else {
+      try {
+        await this.$store.dispatch(
+          'fetchProductsDetails',
+          this.$route.params.id
+        );
+        if (this.productDetailsMsg.length > 0) {
+          throw new Error(this.productDetailsMsg);
+        }
+        this.bookLink = this.productDetails.preview;
         // this.bookLink = '/static/0000.epub';
         await this.showEpub();
-      } else {
-        throw Error();
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      } finally {
+        this.$q.loading.hide();
       }
-    } catch (e) {
-      this.errorMsg = '無法開啟此書';
-    } finally {
-      this.$q.loading.hide();
     }
   },
   beforeDestroy() {
@@ -380,32 +394,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.ebook {
-  position: relative;
-  overflow: hidden;
-  &__error {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
-  &__mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
-  &__left-area {
-    flex: 0 0 20%;
-  }
-  &__center-area {
-    flex: 1;
-  }
-  &__right-area {
-    flex: 0 0 20%;
-  }
+<style lang="scss">
+.border-primary {
+  border: 3px solid #1976d2;
 }
 </style>

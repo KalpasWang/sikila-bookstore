@@ -10,6 +10,32 @@ body {
     0 -1px lightgrey;
 }
 
+.custom-headings {
+  overflow: hidden;
+  text-align: center;
+
+  &::after, &::before {
+    content: '';
+    background-color: #000;
+    display: inline-block;
+    height: 1px;
+    position: relative;
+    width: 20%;
+    max-width: 100px;
+    vertical-align: middle;
+  }
+
+  &::before {
+    right: 0.5em;
+    margin-left: -50%;
+  }
+
+  &::after {
+    left: 0.5em;
+    margin-right: -50%;
+  }
+}
+
 .align-middle {
   vertical-align: middle;
 }
@@ -24,6 +50,13 @@ body {
 
 .paragraph {
   white-space: pre-line;
+}
+
+.q-img__content {
+  transition: all 0.25s linear;
+  &:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
 }
 
 .my-container-sm {

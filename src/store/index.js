@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 // import example from './module-example'
 import products from './products';
+import users from './users';
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ export default function func(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       products,
+      users,
     },
 
     // enable strict mode (adds overhead!)

@@ -1,7 +1,14 @@
 <template>
   <q-page class="my-container-sm" padding>
     <q-toolbar class="q-my-lg">
-      <q-btn rounded :to="{ name: 'Home' }" color="secondary" label="回首頁" icon="arrow_back_ios" />
+      <q-btn
+        :to="{ name: 'Home' }"
+        rounded
+        outline
+        color="secondary"
+        label="回首頁"
+        icon="arrow_back_ios"
+      />
     </q-toolbar>
 
     <div v-if="loading" class="flex justify-center q-pt-lg">
@@ -24,11 +31,11 @@
           <q-card-actions class="q-mt-lg col-grow justify-end items-end q-gutter-sm">
             <q-btn
               :to="{ name: 'Preview', params: { id: productDetails.id }}"
-              outline
+              unelevated
               size="lg"
               color="accent"
             >免費試閱</q-btn>
-            <q-btn outline size="lg" color="primary">購買</q-btn>
+            <q-btn unelevated size="lg" color="primary">購買</q-btn>
           </q-card-actions>
         </q-card-section>
       </q-card-section>
@@ -58,25 +65,16 @@ export default {
   computed: {
     ...mapGetters(['productDetails', 'productDetailsMsg']),
   },
-  watch: {
-    productDetailsMsg(value) {
-      if (value.type) {
-        this.$q.notify({
-          position: 'center',
-          icon: value.icon,
-          type: value.type,
-          message: value.message,
-        });
-      }
-    },
-  },
-  mounted() {
+  async mounted() {
     this.loading = true;
-    this.$store
-      .dispatch('fetchProductsDetails', this.$route.params.id)
-      .then(() => {
-        this.loading = false;
+    await this.$store.dispatch('fetchProductsDetails', this.$route.params.id);
+    if (this.productDetailsMsg.length > 0) {
+      this.$q.dialog({
+        title: '發生錯誤',
+        message: this.productDetailsMsg,
       });
+    }
+    this.loading = false;
   },
 };
 </script>
