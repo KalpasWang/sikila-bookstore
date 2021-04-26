@@ -14,7 +14,8 @@ body {
   overflow: hidden;
   text-align: center;
 
-  &::after, &::before {
+  &::after,
+  &::before {
     content: '';
     background-color: #000;
     display: inline-block;
@@ -44,6 +45,14 @@ body {
   max-height: 100%;
 }
 
+.maxw90 {
+  max-width: 90%;
+}
+
+.static {
+  position: static !important;
+}
+
 .p-0 {
   padding: 0 !important;
 }
@@ -57,6 +66,10 @@ body {
   &:hover {
     background: rgba(0, 0, 0, 0.4);
   }
+}
+
+.q-btn__content > .q-icon {
+  margin-right: 0;
 }
 
 .my-container-sm {

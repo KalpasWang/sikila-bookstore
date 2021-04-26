@@ -5,17 +5,19 @@
 </template>
 
 <script>
-// import { Notify } from 'quasar';
-
 export default {
   name: 'App',
-  // created() {
-  //   Notify.create({
-  //     position: 'top',
-  //     icon: 'mood',
-  //     type: 'positive',
-  //     message: '歡迎來到 Sikila 電子書坊',
-  //   });
-  // },
+  created() {
+    this.$api.interceptors.request.use(
+      (config) => config,
+      (error) => {
+        this.$Q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+        return Promise.reject(error);
+      }
+    );
+  },
 };
 </script>

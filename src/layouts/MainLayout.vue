@@ -15,14 +15,24 @@
       </q-toolbar>
 
       <div class="small-only flex justify-end">
-        <q-btn flat :to="{ name: 'Home' }" label="首頁" icon="home" />
-        <q-btn flat :to="{ name: 'MyBook' }" label="我的書庫" icon="auto_stories" />
+        <q-btn flat :to="{ name: 'Home' }" label="首頁" icon="home" :class="isActive('Home')" />
+        <q-btn
+          flat
+          :to="{ name: 'MyBook' }"
+          label="我的書庫"
+          icon="auto_stories"
+          :class="isActive('MyBook')"
+        />
       </div>
     </q-header>
 
     <q-page-container class="bg-grey-2">
       <router-view />
     </q-page-container>
+
+    <q-footer class="static bg-secondary text-white q-pa-lg text-center">
+      <div>&copy; Copyrights 2021 Sikila 有著作權，侵害必究</div>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -31,6 +41,14 @@ export default {
   name: 'MainLayout',
   data() {
     return {};
+  },
+  methods: {
+    isActive(name) {
+      if (this.$route.name === name) {
+        return 'bg-blue-1 text-blue';
+      }
+      return '';
+    },
   },
 };
 </script>

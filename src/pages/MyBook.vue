@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page class="my-container-sm" padding>
     <div class="q-py-md q-px-xl flex justify-end">
       <q-btn-dropdown color="primary" unelevated :label="`${user.displayName} 的帳號`">
         <div class="column no-wrap q-pa-md">
@@ -12,16 +12,22 @@
     <div v-if="loading" class="flex flex-center">
       <q-spinner color="primary" size="3em" :thickness="10" />
     </div>
-    <div v-else class="row wrap justify-center q-gutter-md q-pa-xl">
-      <q-img
-        v-for="item in userData.books"
-        :key="item.id"
-        :src="item.image"
-        @click="$router.push({ name: 'Read', params: { id: item.id } })"
-        style="max-width: 200px; height: 283px;"
-        contain
-        class="shadow-2 cursor-pointer bg-white img-hover"
-      />
+    <div v-else>
+      <div
+        v-if="userData && userData.books && userData.books.length > 0"
+        class="row wrap justify-center q-gutter-md q-pa-xl"
+      >
+        <q-img
+          v-for="item in userData.books"
+          :key="item.id"
+          :src="item.image"
+          @click="$router.push({ name: 'Read', params: { id: item.id } })"
+          style="max-width: 200px; height: 283px;"
+          contain
+          class="shadow-2 cursor-pointer bg-white img-hover"
+        />
+      </div>
+      <div v-else class="text-center text-h6">還沒有書籍</div>
     </div>
   </q-page>
 </template>

@@ -38,6 +38,17 @@ const routes = [
     component: () => import('pages/EBook.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/admin',
+    component: () => import('layouts/AdminLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Admin',
+        component: () => import('pages/Dashboard.vue'),
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

@@ -6,7 +6,7 @@
         <q-header elevated v-show="showMenu">
           <q-toolbar>
             <q-btn @click="$router.go(-1)" flat round dense icon="arrow_back" />
-            <q-toolbar-title>{{ productDetails.title }}</q-toolbar-title>
+            <q-toolbar-title>{{ title }}</q-toolbar-title>
           </q-toolbar>
         </q-header>
       </q-slide-transition>
@@ -18,12 +18,12 @@
           <q-tab-panels v-model="setting" class="bg-grey-1 text-black">
             <!-- 進度條 -->
             <q-tab-panel name="progress">
-              <div class="row">
-                <div class="col-10">
+              <div class="row flex-center">
+                <div class="col q-pl-sm">
                   <q-slider v-model="progressModel" :min="0" :max="100" :step="0.1" />
                 </div>
                 <div
-                  class="col flex flex-center text-subtitle1 text-weight-light"
+                  class="col-auto q-px-sm flex flex-center text-subtitle1"
                 >{{ progress.toFixed(1) }}%</div>
               </div>
             </q-tab-panel>
@@ -32,13 +32,13 @@
               <div class="text-h6 text-center">{{ fontSize }}</div>
               <div class="row">
                 <div class="col-1 flex flex-center">
-                  <q-icon name="remove" size="md" class="text-dark" />
+                  <q-btn flat round dense icon="remove" @click="fontSizeModel = fontSize - 1" />
                 </div>
-                <div class="col-10">
-                  <q-slider v-model="fontSizeModel" :min="16" :max="36" />
+                <div class="col-10 q-px-sm">
+                  <q-slider v-model="fontSizeModel" :min="fontSizeMin" :max="fontSizeMax" />
                 </div>
                 <div class="col-1 flex flex-center">
-                  <q-icon name="add" size="md" class="text-dark" />
+                  <q-btn flat round dense icon="add" @click="fontSizeModel = fontSize + 1" />
                 </div>
               </div>
             </q-tab-panel>
@@ -54,6 +54,7 @@
                     class="fit text-h6"
                     no-caps
                     :label="item.label"
+                    :icon="themeIndex === index ? 'check' : ''"
                   />
                 </div>
               </div>
@@ -71,7 +72,8 @@
             dense
             class="bg-grey-1 text-black"
             align="justify"
-            narrow-indicator
+            active-bg-color="blue-1"
+            active-color="blue"
           >
             <q-tab name="progress" label="進度" icon="swap_horiz" />
             <q-tab name="text-size" label="文字大小" icon="format_size" />
@@ -92,9 +94,9 @@
         content-class="bg-grey-3"
       >
         <q-scroll-area class="fit">
-          <h3 class="text-h6 q-pl-sm align-middle">
+          <h3 class="text-h6 q-pl-sm vertical-bottom">
             <q-btn @click="showToc = false" icon="chevron_left" flat round dense />
-            {{ productDetails.title }}
+            {{ title }}
           </h3>
           <q-separator />
           <q-tree
@@ -133,7 +135,11 @@ export default {
   name: 'Ebook',
   data() {
     return {
+      // 書籍資訊
       bookLink: '',
+      title: '',
+      // 使用者資訊
+      anonymous: true,
       // epubjs 相關資料
       book: null,
       rendition: null,
@@ -148,6 +154,8 @@ export default {
       setting: 'progress',
       progress: 0,
       fontSize: 20,
+      fontSizeMin: 16,
+      fontSizeMax: 36,
       themeIndex: 0,
       // 背景主題選項
       themeList: [
@@ -209,6 +217,12 @@ export default {
         return this.fontSize;
       },
       set(value) {
+        if (value > this.fontSizeMax) {
+          value = this.fontSizeMax;
+        }
+        if (value < this.fontSizeMin) {
+          value = this.fontSizeMin;
+        }
         this.setFontSize(value);
         this.fontSize = value;
       },
@@ -302,21 +316,29 @@ export default {
       const height = window.innerHeight;
       this.rendition.resize(width, height);
     },
+    // 傳送使用者資料到後端
+    async patchUserData() {
+      await this.$store.dispatch('patchUserData', {
+        id: '00001',
+        fontSize: this.fontSize,
+        theme: this.themeIndex,
+      });
+      if (this.userDataMsg.length > 0) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: this.userDataMsg,
+        });
+      }
+    },
     // 渲染 epub 檔案
     async showEpub() {
       // 生成 Ebook
       this.book = new Epub(this.bookLink);
-      let displayRange;
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
         width: '100%',
         height: '100vh',
       });
-      if (displayRange) {
-        this.rendition.display(displayRange);
-      } else {
-        this.rendition.display();
-      }
       this.setFontSize(this.fontSize);
       this.setTheme(this.themeIndex);
       // 產生 epub 的 位置與導覽物件
@@ -326,21 +348,24 @@ export default {
           this.toc = this.book.navigation.toc;
           this.navigation = this.book.navigation;
           this.locations = this.book.locations;
+          this.setProgress(this.progress);
           window.addEventListener('resize', this.resizeEpub);
         });
     },
-    makeRangeCfi(startCfi, endCfi) {
-      const cfiBase = startCfi.replace(/!.*/, '');
-      const cfiStart = startCfi.replace(/.*!/, '').replace(/\)$/, '');
-      const cfiEnd = endCfi.replace(/.*!/, '').replace(/\)$/, '');
-      const cfiRange = `${cfiBase}!,${cfiStart},${cfiEnd})`;
-      return cfiRange;
-    },
+    // makeRangeCfi(startCfi, endCfi) {
+    //   const cfiBase = startCfi.replace(/!.*/, '');
+    //   const cfiStart = startCfi.replace(/.*!/, '').replace(/\)$/, '');
+    //   const cfiEnd = endCfi.replace(/.*!/, '').replace(/\)$/, '');
+    //   const cfiRange = `${cfiBase}!,${cfiStart},${cfiEnd})`;
+    //   return cfiRange;
+    // },
   },
   async mounted() {
     this.$q.loading.show();
 
     if (this.$route.name === 'Read') {
+      // 如果是有帳號的使用者
+      this.anonymous = false;
       try {
         await this.$store.dispatch('fetchUserData', '00001');
         if (this.userDataMsg.length > 0) {
@@ -356,6 +381,7 @@ export default {
           throw new Error('找不到這本書');
         }
         this.bookLink = book.read;
+        this.title = book.title;
         this.progress = book.progress || 0;
         await this.showEpub();
       } catch (error) {
@@ -367,6 +393,8 @@ export default {
         this.$q.loading.hide();
       }
     } else {
+      // 如果是匿名的使用者
+      this.anonymous = true;
       try {
         await this.$store.dispatch(
           'fetchProductsDetails',
@@ -376,6 +404,7 @@ export default {
           throw new Error(this.productDetailsMsg);
         }
         this.bookLink = this.productDetails.preview;
+        this.title = this.productDetails.title;
         // this.bookLink = '/static/0000.epub';
         await this.showEpub();
       } catch (error) {
@@ -389,6 +418,9 @@ export default {
     }
   },
   beforeDestroy() {
+    if (!this.anonymous && this.userData && this.userData.id) {
+      this.patchUserData();
+    }
     window.removeEventListener('resize', this.resizeEpub);
   },
 };
@@ -396,6 +428,6 @@ export default {
 
 <style lang="scss">
 .border-primary {
-  border: 3px solid #1976d2;
+  border: 3px solid #9c27b0;
 }
 </style>
