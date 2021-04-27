@@ -27,7 +27,10 @@
           class="shadow-2 cursor-pointer bg-white img-hover"
         />
       </div>
-      <div v-else class="text-center text-h6">還沒有書籍</div>
+      <div
+        v-else-if="userData && userData.books && userData.books.length === 0"
+        class="text-center text-h6"
+      >還沒有書籍</div>
     </div>
   </q-page>
 </template>

@@ -17,9 +17,9 @@ body {
   &::after,
   &::before {
     content: '';
-    background-color: #000;
+    background-color: #1976d2;
     display: inline-block;
-    height: 1px;
+    height: 3px;
     position: relative;
     width: 20%;
     max-width: 100px;
@@ -35,10 +35,6 @@ body {
     left: 0.5em;
     margin-right: -50%;
   }
-}
-
-.align-middle {
-  vertical-align: middle;
 }
 
 .maxh100 {

@@ -42,7 +42,7 @@
         <q-card-section class="col-12">
           <div class="text-h5 q-mb-lg max-width-1024">書籍簡介</div>
           <div
-            class="text-h6 paragraph text-weight-light max-width-1024"
+            class="text-body1 paragraph text-weight-light max-width-1024"
           >{{ productDetails.description }}</div>
         </q-card-section>
       </q-card>

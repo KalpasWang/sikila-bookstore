@@ -4,11 +4,12 @@
       <q-toolbar class="my-container-sm">
         <q-toolbar-title>
           <h1 class="q-my-none text-h6 text-weight-bold">
-            <span class="text-h4 text-primary text-shadow">觀音之愛</span> 電子書坊
+            <span class="text-h4 text-blue text-shadow">觀音之愛</span>
+            <span class="text-grey-8 text-weight-regular">&nbsp;電子書坊</span>
           </h1>
         </q-toolbar-title>
 
-        <q-tabs class="text-black large-only" active-bg-color="blue-1" active-color="blue">
+        <q-tabs class="text-black large-only" active-bg-color="blue-1" active-color="primary">
           <q-route-tab :to="{ name: 'Home' }" name="home" icon="home" label="首頁" />
           <q-route-tab :to="{ name: 'MyBook' }" name="mybook" icon="auto_stories" label="我的書庫" />
         </q-tabs>
@@ -45,7 +46,7 @@ export default {
   methods: {
     isActive(name) {
       if (this.$route.name === name) {
-        return 'bg-blue-1 text-blue';
+        return 'bg-blue-1 text-primary';
       }
       return '';
     },

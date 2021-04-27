@@ -8,7 +8,8 @@
         <q-btn flat round dense icon="menu" @click="leftDrawer = !leftDrawer" />
         <q-toolbar-title>
           <h1 class="q-my-none text-h6 text-weight-bold">
-            <span class="text-h4 text-primary text-shadow">觀音之愛</span> 電子書坊管理
+            <span class="text-h4 text-blue text-shadow">觀音之愛</span>
+            <span class="text-grey-8 text-weight-regular">&nbsp;書坊管理</span>
           </h1>
         </q-toolbar-title>
       </q-toolbar>

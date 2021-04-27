@@ -50,7 +50,7 @@
                     @click="themeIndexModel = index"
                     :color="item.bgClass"
                     :text-color="item.textClass"
-                    :class="themeIndex === index ? 'border-primary' : ''"
+                    :class="themeIndex === index ? 'border-blue' : ''"
                     class="fit text-h6"
                     no-caps
                     :label="item.label"
@@ -73,7 +73,7 @@
             class="bg-grey-1 text-black"
             align="justify"
             active-bg-color="blue-1"
-            active-color="blue"
+            active-color="primary"
           >
             <q-tab name="progress" label="進度" icon="swap_horiz" />
             <q-tab name="text-size" label="文字大小" icon="format_size" />
@@ -427,7 +427,7 @@ export default {
 </script>
 
 <style lang="scss">
-.border-primary {
-  border: 3px solid #9c27b0;
+.border-blue {
+  border: 3px solid #2196f3;
 }
 </style>
