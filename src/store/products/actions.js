@@ -2,13 +2,14 @@
 export function someAction (context) {
 }
 */
-import { api } from 'boot/axios';
+import { projectFirestore } from 'boot/firebase.config';
 
 export async function fetchProducts({ commit }) {
   try {
-    const res = await api.get('/products');
-    if (res.status === 200) {
-      commit('setProducts', res.data);
+    const res = await projectFirestore.collection('products').get();
+    if (res.docs) {
+      const products = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      commit('setProducts', products);
     } else {
       throw new Error(`無法取得書籍列表：Status ${res.status}`);
     }
@@ -19,12 +20,19 @@ export async function fetchProducts({ commit }) {
 
 export async function fetchProductsDetails({ commit }, id) {
   try {
-    const res = await api.get(`/products?id=${id}`);
-    if (res.status === 200) {
-      commit('setProductDetails', res.data[0]);
-    } else {
-      throw new Error(`無法取得此書：Status ${res.status}`);
+    const res = await projectFirestore
+      .collection('products')
+      .doc(id)
+      .get();
+    if (!res.exists) {
+      throw new Error('這本書並不存在');
     }
+    const { description } = res.data();
+    commit('setProductDetails', {
+      ...res.data(),
+      id: res.id,
+      description: description.replaceAll(' ', '\n'),
+    });
   } catch (error) {
     commit('setProductDetailsMsg', error.message);
   }

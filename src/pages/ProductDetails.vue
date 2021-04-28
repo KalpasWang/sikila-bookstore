@@ -14,7 +14,7 @@
     <div v-if="loading" class="flex justify-center q-pt-lg">
       <q-spinner class="q-mx-auto" color="primary" size="3em" :thickness="10" />
     </div>
-    <div v-else>
+    <div v-else-if="productDetailsMsg.length === 0">
       <q-card v-if="productDetails && productDetails.title" class="maxw90 q-mx-auto" bordered>
         <q-card-section horizontal>
           <q-card-section class="px-1-xs">
@@ -40,13 +40,14 @@
         <q-separator />
 
         <q-card-section class="col-12">
-          <div class="text-h5 q-mb-lg max-width-1024">書籍簡介</div>
+          <div class="text-h5 text-center q-mb-lg max-width-1024">書籍簡介</div>
           <div
-            class="text-body1 paragraph text-weight-light max-width-1024"
+            class="text-body1 text-center paragraph text-weight-light max-width-1024"
           >{{ productDetails.description }}</div>
         </q-card-section>
       </q-card>
     </div>
+    <h4 v-else class="text-h6 text-center">發生錯誤</h4>
   </q-page>
 </template>
 

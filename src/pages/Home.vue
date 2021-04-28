@@ -32,7 +32,7 @@
       <!-- 載入資料時顯示旋轉特效 -->
       <q-spinner color="primary" size="3em" :thickness="10" />
     </div>
-    <div v-else>
+    <div v-else-if="productsMsg.length === 0">
       <div
         v-if="products && products.length > 0"
         class="row justify-center items-start q-gutter-md q-px-md"
@@ -72,6 +72,7 @@
       </div>
       <h4 v-else-if="products && products.length === 0" class="text-h6 text-center">尚未有書籍</h4>
     </div>
+    <h4 v-else class="text-h6 text-center">發生錯誤</h4>
   </q-page>
 </template>
 

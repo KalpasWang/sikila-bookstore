@@ -128,8 +128,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import Epub from 'epubjs';
-
-// const DOWNLOAD_URL = '/static/09F3.epub';
+// import { projectStorage } from 'boot/firebase.config';
 
 export default {
   name: 'Ebook',
@@ -316,6 +315,12 @@ export default {
       const height = window.innerHeight;
       this.rendition.resize(width, height);
     },
+    // async getBook(path) {
+    //   try {
+    //     const storageRef = projectStorage.ref(path);
+    //     const url = await storageRef.getDownloadURL();
+    //   } catch (error) {}
+    // },
     // 傳送使用者資料到後端
     async patchUserData() {
       await this.$store.dispatch('patchUserData', {
@@ -350,6 +355,9 @@ export default {
           this.locations = this.book.locations;
           this.setProgress(this.progress);
           window.addEventListener('resize', this.resizeEpub);
+        })
+        .catch(() => {
+          throw new Error('無法開啟書籍');
         });
     },
     // makeRangeCfi(startCfi, endCfi) {
@@ -377,7 +385,7 @@ export default {
         const book = this.userData.books.find(
           (item) => item.id === vm.$route.params.id
         );
-        if (!book || !book.read) {
+        if (!book || !book.read || book.read.length === 0) {
           throw new Error('找不到這本書');
         }
         this.bookLink = book.read;
@@ -405,7 +413,10 @@ export default {
         }
         this.bookLink = this.productDetails.preview;
         this.title = this.productDetails.title;
-        // this.bookLink = '/static/0000.epub';
+        if (!this.bookLink || this.bookLink.length === 0) {
+          throw new Error('找不到這本書');
+        }
+
         await this.showEpub();
       } catch (error) {
         this.$q.dialog({
