@@ -4,7 +4,7 @@
       <q-btn-dropdown color="primary" unelevated :label="`${user.displayName} 的帳號`">
         <div class="column no-wrap q-pa-md">
           <div class="text-subtitle1 q-mb-xs">{{ user.email }}</div>
-          <q-btn color="accent" label="登出" unelevated size="md" v-close-popup />
+          <q-btn @click="logout" color="accent" label="登出" unelevated size="md" v-close-popup />
         </div>
       </q-btn-dropdown>
     </div>
@@ -37,38 +37,54 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { projectAuth } from 'boot/firebase.config';
+import getUser from 'boot/firebase.getUser';
 
 export default {
   name: 'MyBook',
   data() {
     return {
-      user: {
-        id: '00001',
-        displayName: '丸尾',
-        email: 'wf6212@gmail.com',
-        password: '383838',
-      },
-      loading: true,
+      user: null,
+      loading: false,
     };
   },
   computed: {
     ...mapGetters(['userData', 'userLoginMsg', 'userDataMsg']),
   },
-  methods: {
-    async fetchMyProfile() {
-      this.loading = true;
-      await this.$store.dispatch('fetchUserData', this.user.id);
-      if (this.userDataMsg.length > 0) {
-        this.$q.dialog({
-          title: '發生錯誤',
-          message: this.userDataMsg,
-        });
+  watch: {
+    user(newValue, oldValue) {
+      if (oldValue && !newValue) {
+        this.$router.push({ name: 'Home' });
       }
-      this.loading = false;
     },
   },
+  methods: {
+    async logout() {
+      try {
+        await projectAuth.signOut();
+        this.$router.push({ name: 'Home' });
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      }
+    },
+    // async fetchMyProfile() {
+    //   this.loading = true;
+    //   await this.$store.dispatch('fetchUserData', this.user.id);
+    //   if (this.userDataMsg.length > 0) {
+    //     this.$q.dialog({
+    //       title: '發生錯誤',
+    //       message: this.userDataMsg,
+    //     });
+    //   }
+    //   this.loading = false;
+    // },
+  },
   created() {
-    this.fetchMyProfile();
+    // this.fetchMyProfile();
+    this.user = getUser();
   },
 };
 </script>

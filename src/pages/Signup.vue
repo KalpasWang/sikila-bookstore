@@ -11,7 +11,7 @@
               <q-icon name="email" />
             </template>
           </q-input>
-          <q-input square clearable v-model="username" type="text" label="暱稱">
+          <q-input square clearable v-model="displayName" type="text" label="暱稱">
             <template v-slot:prepend>
               <q-icon name="person" />
             </template>
@@ -24,24 +24,54 @@
         </q-form>
       </q-card-section>
       <q-card-actions class="q-px-lg q-pt-md">
-        <q-btn unelevated size="lg" color="primary" class="full-width text-white" label="註冊" />
+        <q-btn
+          @click="signup"
+          unelevated
+          size="lg"
+          color="primary"
+          class="full-width text-white"
+          label="註冊"
+        />
       </q-card-actions>
       <q-card-section class="text-center q-pa-sm">
-        <q-btn :to="{ name: 'Login' }" flat color="transparent" class="text-grey-6">已經有帳號嗎？</q-btn>
+        <q-btn :to="{ name: 'Login' }" flat color="transparent" class="text-grey-6">已經有帳號了嗎？</q-btn>
       </q-card-section>
     </q-card>
   </q-page>
 </template>
 
 <script>
+import { projectAuth } from 'boot/firebase.config';
+
 export default {
   name: 'Signup',
   data() {
     return {
-      username: '',
+      displayName: '',
       email: '',
       password: '',
     };
+  },
+  methods: {
+    async signup() {
+      try {
+        const res = await projectAuth.createUserWithEmailAndPassword(
+          this.email,
+          this.password
+        );
+        if (!res) {
+          throw new Error('無法註冊帳號');
+        }
+        await res.user.updateProfile({ displayName: this.displayName });
+        console.log(res);
+        // this.$router.push({ name: 'MyBook' });
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      }
+    },
   },
 };
 </script>

@@ -1,3 +1,16 @@
+import { projectAuth } from 'boot/firebase.config';
+
+// auth guards
+const requireAuth = (to, from, next) => {
+  const user = projectAuth.currentUser;
+  console.log('current user in auth guard: ', user);
+  if (!user) {
+    next({ name: 'Login' });
+  } else {
+    next();
+  }
+};
+
 const routes = [
   {
     path: '/',
@@ -13,7 +26,7 @@ const routes = [
         path: 'mybook',
         name: 'MyBook',
         component: () => import('pages/MyBook.vue'),
-        meta: { requiresAuth: true },
+        beforeEnter: requireAuth,
       },
       {
         path: 'login',
@@ -36,7 +49,7 @@ const routes = [
     path: '/readmybook/:id',
     name: 'Read',
     component: () => import('pages/EBook.vue'),
-    meta: { requiresAuth: true },
+    beforeEnter: requireAuth,
   },
   {
     path: '/admin',

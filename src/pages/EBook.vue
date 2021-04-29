@@ -128,7 +128,8 @@
 <script>
 import { mapGetters } from 'vuex';
 import Epub from 'epubjs';
-// import { projectStorage } from 'boot/firebase.config';
+import { projectStorage } from 'boot/firebase.config';
+import { axios } from 'boot/axios';
 
 export default {
   name: 'Ebook',
@@ -315,12 +316,17 @@ export default {
       const height = window.innerHeight;
       this.rendition.resize(width, height);
     },
-    // async getBook(path) {
-    //   try {
-    //     const storageRef = projectStorage.ref(path);
-    //     const url = await storageRef.getDownloadURL();
-    //   } catch (error) {}
-    // },
+    async getBook(path) {
+      try {
+        const storageRef = projectStorage.ref(path);
+        const url = await storageRef.getDownloadURL();
+        const res = await axios.get(url);
+        console.log(res);
+        return res.data;
+      } catch (error) {
+        throw new Error('無法存取此電子書');
+      }
+    },
     // 傳送使用者資料到後端
     async patchUserData() {
       await this.$store.dispatch('patchUserData', {
@@ -336,9 +342,9 @@ export default {
       }
     },
     // 渲染 epub 檔案
-    async showEpub() {
+    async showEpub(file) {
       // 生成 Ebook
-      this.book = new Epub(this.bookLink);
+      this.book = new Epub(file);
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
         width: '100%',
@@ -408,7 +414,7 @@ export default {
           'fetchProductsDetails',
           this.$route.params.id
         );
-        if (this.productDetailsMsg.length > 0) {
+        if (this.productDetailsMsg) {
           throw new Error(this.productDetailsMsg);
         }
         this.bookLink = this.productDetails.preview;
@@ -416,8 +422,8 @@ export default {
         if (!this.bookLink || this.bookLink.length === 0) {
           throw new Error('找不到這本書');
         }
-
-        await this.showEpub();
+        const file = await this.getBook(this.bookLink);
+        await this.showEpub(file);
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',

@@ -19,7 +19,14 @@
         </q-form>
       </q-card-section>
       <q-card-actions class="q-px-lg q-pt-md">
-        <q-btn unelevated size="lg" color="primary" class="full-width text-white" label="登入" />
+        <q-btn
+          @click="login"
+          unelevated
+          size="lg"
+          color="primary"
+          class="full-width text-white"
+          label="登入"
+        />
       </q-card-actions>
       <q-card-section class="text-center q-pa-sm">
         <q-btn :to="{ name: 'Signup' }" flat color="transparent" class="text-grey-6">還沒有帳號嗎？</q-btn>
@@ -29,14 +36,34 @@
 </template>
 
 <script>
+import { projectAuth } from 'boot/firebase.config';
+
 export default {
   name: 'Login',
   data() {
     return {
-      username: '',
       email: '',
       password: '',
     };
+  },
+  methods: {
+    async login() {
+      try {
+        // INTERNAL TIMER MAY CAUSE EXTRA ERROR IN THE CONSOLE WHEN USING AWAIT
+        // FIREBASE WILL OVERHAUL IN THE FUTURE & EVERYTHING STILL WORKS
+        const res = await projectAuth.signInWithEmailAndPassword(
+          this.email,
+          this.password
+        );
+        console.log(res);
+        this.$router.push({ name: 'MyBook' });
+      } catch (err) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: `帳號或密碼錯誤：${err.message}`,
+        });
+      }
+    },
   },
 };
 </script>
