@@ -10,6 +10,7 @@ export async function fetchProducts({ commit }) {
     if (res.docs) {
       const products = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
       commit('setProducts', products);
+      commit('setProductsMsg', '');
     } else {
       throw new Error(`無法取得書籍列表：Status ${res.status}`);
     }
@@ -33,6 +34,7 @@ export async function fetchProductsDetails({ commit }, id) {
       id: res.id,
       description: description.replaceAll(' ', '\n'),
     });
+    commit('setProductDetailsMsg', '');
   } catch (error) {
     commit('setProductDetailsMsg', error.message);
   }

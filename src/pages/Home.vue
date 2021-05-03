@@ -39,34 +39,31 @@
       >
         <!-- 書籍資訊卡片 -->
         <q-card v-for="item in products" :key="item.id" class="my-card">
-          <q-img style="height: 400px" :src="item.image" contain />
+          <q-img style="height: 312px" :src="item.image" contain />
           <q-separator />
 
-          <q-card-section class="q-pa-sm">
+          <q-card-section class="q-pa-none">
             <q-btn
               fab
               color="accent"
               icon="local_fire_department"
               class="absolute"
-              style="top: 0; right: 12px; transform: translateY(-50%);"
+              style="top: 0; right: 12px; transform: translateY(-80%);"
             />
           </q-card-section>
 
-          <q-card-section class="q-py-none">
-            <h5 class="q-my-none">{{ item.title }}</h5>
+          <q-card-section class="q-pb-none">
+            <h5 class="q-my-none text-h6 text-weight-regular">{{ item.title }}</h5>
             <h6 class="q-my-none text-subtitle1 text-weight-light">{{ item.author }}</h6>
           </q-card-section>
 
-          <q-card-actions class="flex justify-between">
-            <div class="text-h5">{{ item.price | currency }}</div>
-            <div class="q-gutter-x-sm">
-              <q-btn
-                :to="{ name: 'ProductDetails', params: { id: item.id } }"
-                unelevated
-                size="lg"
-                color="primary"
-              >查看更多</q-btn>
-            </div>
+          <q-card-actions class="justify-end">
+            <q-btn
+              :to="{ name: 'ProductDetails', params: { id: item.id } }"
+              unelevated
+              color="primary"
+              class="full-width"
+            >查看更多</q-btn>
           </q-card-actions>
         </q-card>
       </div>
@@ -84,7 +81,6 @@ export default {
   data() {
     return {
       loading: true,
-      about: false,
       needToKnow: false,
     };
   },
@@ -107,7 +103,7 @@ export default {
 
 <style lang="scss">
 .my-card {
-  width: 280px;
+  width: 220px;
   max-width: 90%;
 }
 </style>

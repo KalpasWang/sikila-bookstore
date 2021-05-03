@@ -55,21 +55,24 @@ export default {
   methods: {
     async signup() {
       try {
-        const res = await projectAuth.createUserWithEmailAndPassword(
+        this.$q.loading.show();
+        const credentials = await projectAuth.createUserWithEmailAndPassword(
           this.email,
           this.password
         );
-        if (!res) {
+        if (!credentials) {
           throw new Error('無法註冊帳號');
         }
-        await res.user.updateProfile({ displayName: this.displayName });
-        console.log(res);
-        // this.$router.push({ name: 'MyBook' });
+        await credentials.user.updateProfile({ displayName: this.displayName });
+        // console.log(credentials);
+        this.$router.push({ name: 'MyBook' });
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',
           message: error.message,
         });
+      } finally {
+        this.$q.loading.hide();
       }
     },
   },

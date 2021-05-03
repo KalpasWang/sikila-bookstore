@@ -3,7 +3,7 @@
   "tabWidth": 2,
   "semi": true,
   "SingleQuote": true,
-  "spaceBeforeFunctionParen": true,
+  "spaceBeforeFunctionParen": false,
   "arrowParens": "always",
   "printWidth": 80
 }

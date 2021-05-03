@@ -1,6 +1,5 @@
 export default () => ({
-  user: {},
-  userData: {},
-  userLoginMsg: '',
-  userDataMsg: '',
+  user: null,
+  userBooks: [],
+  userMsg: '',
 });

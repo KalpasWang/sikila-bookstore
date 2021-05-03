@@ -49,19 +49,17 @@ export default {
   methods: {
     async login() {
       try {
-        // INTERNAL TIMER MAY CAUSE EXTRA ERROR IN THE CONSOLE WHEN USING AWAIT
-        // FIREBASE WILL OVERHAUL IN THE FUTURE & EVERYTHING STILL WORKS
-        const res = await projectAuth.signInWithEmailAndPassword(
-          this.email,
-          this.password
-        );
-        console.log(res);
+        this.$q.loading.show();
+        await projectAuth.signInWithEmailAndPassword(this.email, this.password);
+        // console.log(credentials);
         this.$router.push({ name: 'MyBook' });
       } catch (err) {
         this.$q.dialog({
           title: '發生錯誤',
           message: `帳號或密碼錯誤：${err.message}`,
         });
+      } finally {
+        this.$q.loading.hide();
       }
     },
   },

@@ -9,9 +9,21 @@
           </h1>
         </q-toolbar-title>
 
-        <q-tabs class="text-black large-only" active-bg-color="blue-1" active-color="primary">
-          <q-route-tab :to="{ name: 'Home' }" name="home" icon="home" label="首頁" />
-          <q-route-tab :to="{ name: 'MyBook' }" name="mybook" icon="auto_stories" label="我的書庫" />
+        <q-tabs class="text-black large-only" indicator-color="transparent">
+          <q-route-tab
+            :to="{ name: 'Home' }"
+            name="home"
+            icon="home"
+            label="首頁"
+            :class="isActive('Home')"
+          />
+          <q-route-tab
+            :to="{ name: 'MyBook' }"
+            name="mybook"
+            icon="auto_stories"
+            label="我的書庫"
+            :class="isActive('MyBook')"
+          />
         </q-tabs>
       </q-toolbar>
 

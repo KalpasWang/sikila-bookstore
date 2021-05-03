@@ -8,7 +8,10 @@
 export default {
   name: 'App',
   created() {
-    this.$api.interceptors.request.use(
+    // 監聽使用者狀態
+    this.$store.dispatch('syncUserState');
+    // 設定 axios request handler
+    this.$axios.interceptors.request.use(
       (config) => config,
       (error) => {
         this.$Q.dialog({

@@ -1,7 +1,13 @@
 <template>
   <q-page class="my-container-sm" padding>
     <div class="q-py-md q-px-xl flex justify-end">
-      <q-btn-dropdown color="primary" unelevated :label="`${user.displayName} 的帳號`">
+      <q-btn-dropdown
+        v-if="user && user.uid"
+        color="primary"
+        auto-close
+        unelevated
+        :label="`${user.displayName} 的帳號`"
+      >
         <div class="column no-wrap q-pa-md">
           <div class="text-subtitle1 q-mb-xs">{{ user.email }}</div>
           <q-btn @click="logout" color="accent" label="登出" unelevated size="md" v-close-popup />
@@ -14,23 +20,20 @@
     </div>
     <div v-else>
       <div
-        v-if="userData && userData.books && userData.books.length > 0"
+        v-if="userBooks && userBooks.length > 0"
         class="row wrap justify-center q-gutter-md q-pa-xl"
       >
         <q-img
-          v-for="item in userData.books"
+          v-for="item in userBooks"
           :key="item.id"
           :src="item.image"
-          @click="$router.push({ name: 'Read', params: { id: item.id } })"
+          @click="$router.push({ name: 'Read', params: { id: item.bid } })"
           style="max-width: 200px; height: 283px;"
           contain
           class="shadow-2 cursor-pointer bg-white img-hover"
         />
       </div>
-      <div
-        v-else-if="userData && userData.books && userData.books.length === 0"
-        class="text-center text-h6"
-      >還沒有書籍</div>
+      <div v-else-if="userBooks && userBooks.length === 0" class="text-center text-h6">還沒有書籍</div>
     </div>
   </q-page>
 </template>
@@ -38,18 +41,16 @@
 <script>
 import { mapGetters } from 'vuex';
 import { projectAuth } from 'boot/firebase.config';
-import getUser from 'boot/firebase.getUser';
 
 export default {
   name: 'MyBook',
   data() {
     return {
-      user: null,
       loading: false,
     };
   },
   computed: {
-    ...mapGetters(['userData', 'userLoginMsg', 'userDataMsg']),
+    ...mapGetters(['user', 'userBooks', 'userMsg']),
   },
   watch: {
     user(newValue, oldValue) {
@@ -61,6 +62,7 @@ export default {
   methods: {
     async logout() {
       try {
+        this.$q.loading.show();
         await projectAuth.signOut();
         this.$router.push({ name: 'Home' });
       } catch (error) {
@@ -68,23 +70,32 @@ export default {
           title: '發生錯誤',
           message: error.message,
         });
+      } finally {
+        this.$q.loading.hide();
       }
     },
-    // async fetchMyProfile() {
-    //   this.loading = true;
-    //   await this.$store.dispatch('fetchUserData', this.user.id);
-    //   if (this.userDataMsg.length > 0) {
-    //     this.$q.dialog({
-    //       title: '發生錯誤',
-    //       message: this.userDataMsg,
-    //     });
-    //   }
-    //   this.loading = false;
-    // },
+    async fetchMyBooks() {
+      try {
+        this.loading = true;
+        if (!this.user || !this.user.uid) {
+          throw new Error('無法取得你的資料');
+        }
+        await this.$store.dispatch('fetchUserBooks', this.user.uid);
+        if (this.userMsg) {
+          throw new Error(this.userMsg);
+        }
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
   },
-  created() {
-    // this.fetchMyProfile();
-    this.user = getUser();
+  mounted() {
+    this.fetchMyBooks();
   },
 };
 </script>

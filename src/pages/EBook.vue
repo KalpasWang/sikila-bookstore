@@ -129,7 +129,7 @@
 import { mapGetters } from 'vuex';
 import Epub from 'epubjs';
 import { projectStorage } from 'boot/firebase.config';
-import { axios } from 'boot/axios';
+// import { axios } from 'boot/axios';
 
 export default {
   name: 'Ebook',
@@ -188,8 +188,9 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'userData',
-      'userDataMsg',
+      'user',
+      'userBooks',
+      'userMsg',
       'productDetails',
       'productDetailsMsg',
     ]),
@@ -316,35 +317,36 @@ export default {
       const height = window.innerHeight;
       this.rendition.resize(width, height);
     },
+    // 回傳書籍的連結
     async getBook(path) {
       try {
         const storageRef = projectStorage.ref(path);
         const url = await storageRef.getDownloadURL();
-        const res = await axios.get(url);
-        console.log(res);
-        return res.data;
+        // const res = await axios.get(url);
+        // console.log(res);
+        return url; // res.data;
       } catch (error) {
-        throw new Error('無法存取此電子書');
+        throw new Error('無法取得此書');
       }
     },
     // 傳送使用者資料到後端
     async patchUserData() {
-      await this.$store.dispatch('patchUserData', {
-        id: '00001',
-        fontSize: this.fontSize,
-        theme: this.themeIndex,
-      });
-      if (this.userDataMsg.length > 0) {
-        this.$q.dialog({
-          title: '發生錯誤',
-          message: this.userDataMsg,
-        });
-      }
+      // await this.$store.dispatch('patchUserData', {
+      //   id: '00001',
+      //   fontSize: this.fontSize,
+      //   theme: this.themeIndex,
+      // });
+      // if (this.userMsg) {
+      //   this.$q.dialog({
+      //     title: '發生錯誤',
+      //     message: this.userMsg,
+      //   });
+      // }
     },
     // 渲染 epub 檔案
-    async showEpub(file) {
+    async showEpub(url) {
       // 生成 Ebook
-      this.book = new Epub(file);
+      this.book = new Epub(url);
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
         width: '100%',
@@ -381,23 +383,24 @@ export default {
       // 如果是有帳號的使用者
       this.anonymous = false;
       try {
-        await this.$store.dispatch('fetchUserData', '00001');
-        if (this.userDataMsg.length > 0) {
-          throw new Error(this.userDataMsg);
+        await this.$store.dispatch('fetchUserBooks', this.user.uid);
+        if (this.userMsg) {
+          throw new Error(this.userMsg);
         }
-        this.fontSize = this.userData.fontSize;
-        this.themeIndex = this.userData.theme;
+        // this.fontSize = this.userData.fontSize;
+        // this.themeIndex = this.userData.theme;
         const vm = this;
-        const book = this.userData.books.find(
-          (item) => item.id === vm.$route.params.id
+        const book = this.userBooks.find(
+          (item) => item.bid === vm.$route.params.id
         );
-        if (!book || !book.read || book.read.length === 0) {
+        if (!book || !book.read) {
           throw new Error('找不到這本書');
         }
         this.bookLink = book.read;
         this.title = book.title;
         this.progress = book.progress || 0;
-        await this.showEpub();
+        const file = await this.getBook(this.bookLink);
+        await this.showEpub(file);
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',
@@ -419,7 +422,7 @@ export default {
         }
         this.bookLink = this.productDetails.preview;
         this.title = this.productDetails.title;
-        if (!this.bookLink || this.bookLink.length === 0) {
+        if (!this.bookLink) {
           throw new Error('找不到這本書');
         }
         const file = await this.getBook(this.bookLink);

@@ -7,14 +7,10 @@ export function user(state) {
   return state.user;
 }
 
-export function userData(state) {
-  return state.userData;
+export function userBooks(state) {
+  return state.userBooks;
 }
 
-export function userLoginMsg(state) {
-  return state.userLoginMsg;
-}
-
-export function userDataMsg(state) {
-  return state.userDataMsg;
+export function userMsg(state) {
+  return state.userMsg;
 }
