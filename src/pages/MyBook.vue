@@ -19,43 +19,61 @@
       <q-spinner color="primary" size="3em" :thickness="10" />
     </div>
     <div v-else>
-      <div
-        v-if="userBooks && userBooks.length > 0"
-        class="row wrap justify-center q-gutter-md q-pa-xl"
-      >
-        <q-img
-          v-for="item in userBooks"
-          :key="item.id"
-          :src="item.image"
-          @click="$router.push({ name: 'Read', params: { id: item.bid } })"
-          style="max-width: 200px; height: 283px;"
-          contain
-          class="shadow-2 cursor-pointer bg-white img-hover"
-        />
+      <div v-if="userBooks && userBooks.length > 0">
+        <div class="row wrap justify-center q-gutter-md q-pa-xl">
+          <q-img
+            v-for="item in boughtBooks"
+            :key="item.id"
+            :src="item.image"
+            @click="$router.push({ name: 'Read', params: { id: item.bid } })"
+            style="max-width: 200px; height: 283px;"
+            contain
+            class="shadow-2 cursor-pointer bg-white"
+          />
+        </div>
+
+        <h3 v-if="this.orderingBooks.length" class="text-h6 text-center q-mt-lg">尚未啟用的書籍</h3>
+        <div class="row wrap justify-center q-gutter-md q-px-xl">
+          <q-img
+            v-for="item in orderingBooks"
+            :key="item.id"
+            :src="item.image"
+            style="max-width: 100px; height: 141.5px;"
+            contain
+            class="shadow-2 bg-white"
+          />
+        </div>
       </div>
-      <div v-else-if="userBooks && userBooks.length === 0" class="text-center text-h6">還沒有書籍</div>
+      <div v-else class="text-center text-h6">還沒有書籍</div>
     </div>
   </q-page>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import { projectAuth } from 'boot/firebase.config';
+import { projectAuth, getCurrentUser } from 'boot/firebase.config';
 
 export default {
   name: 'MyBook',
   data() {
     return {
+      user: null,
       loading: false,
     };
   },
   computed: {
-    ...mapGetters(['user', 'userBooks', 'userMsg']),
+    ...mapGetters(['userBooks', 'userMsg']),
+    boughtBooks() {
+      return this.userBooks.filter((b) => b.isEnabled);
+    },
+    orderingBooks() {
+      return this.userBooks.filter((b) => !b.isEnabled);
+    },
   },
   watch: {
-    user(newValue, oldValue) {
-      if (oldValue && !newValue) {
-        this.$router.push({ name: 'Home' });
+    user(newValue) {
+      if (!newValue) {
+        this.$router.push({ name: 'Login' });
       }
     },
   },
@@ -75,27 +93,28 @@ export default {
       }
     },
     async fetchMyBooks() {
-      try {
-        this.loading = true;
-        if (!this.user || !this.user.uid) {
-          throw new Error('無法取得你的資料');
-        }
-        await this.$store.dispatch('fetchUserBooks', this.user.uid);
-        if (this.userMsg) {
-          throw new Error(this.userMsg);
-        }
-      } catch (error) {
-        this.$q.dialog({
-          title: '發生錯誤',
-          message: error.message,
-        });
-      } finally {
-        this.loading = false;
+      if (!this.user || !this.user.uid) {
+        throw new Error('無法取得你的書籍');
+      }
+      await this.$store.dispatch('fetchUserBooks', this.user.uid);
+      if (this.userMsg) {
+        throw new Error(this.userMsg);
       }
     },
   },
-  mounted() {
-    this.fetchMyBooks();
+  async mounted() {
+    try {
+      this.loading = true;
+      this.user = await getCurrentUser();
+      this.fetchMyBooks();
+    } catch (error) {
+      this.$q.dialog({
+        title: '發生錯誤',
+        message: error.message,
+      });
+    } finally {
+      this.loading = false;
+    }
   },
 };
 </script>

@@ -26,6 +26,8 @@
       <q-card-actions class="q-px-lg q-pt-md">
         <q-btn
           @click="signup"
+          :disable="!isBtnEnabled"
+          :loading="isLoading"
           unelevated
           size="lg"
           color="primary"
@@ -50,12 +52,15 @@ export default {
       displayName: '',
       email: '',
       password: '',
+      isBtnEnabled: true,
+      isLoading: false,
     };
   },
   methods: {
     async signup() {
       try {
-        this.$q.loading.show();
+        this.isLoading = true;
+        this.isBtnEnabled = false;
         const credentials = await projectAuth.createUserWithEmailAndPassword(
           this.email,
           this.password
@@ -64,7 +69,6 @@ export default {
           throw new Error('無法註冊帳號');
         }
         await credentials.user.updateProfile({ displayName: this.displayName });
-        // console.log(credentials);
         this.$router.push({ name: 'MyBook' });
       } catch (error) {
         this.$q.dialog({
@@ -72,7 +76,8 @@ export default {
           message: error.message,
         });
       } finally {
-        this.$q.loading.hide();
+        this.isLoading = false;
+        this.isBtnEnabled = true;
       }
     },
   },

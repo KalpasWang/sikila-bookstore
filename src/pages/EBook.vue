@@ -128,8 +128,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import Epub from 'epubjs';
-import { projectStorage } from 'boot/firebase.config';
-// import { axios } from 'boot/axios';
+import { projectStorage, getCurrentUser } from 'boot/firebase.config';
 
 export default {
   name: 'Ebook',
@@ -139,6 +138,7 @@ export default {
       bookLink: '',
       title: '',
       // 使用者資訊
+      user: null,
       anonymous: true,
       // epubjs 相關資料
       book: null,
@@ -188,7 +188,6 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'user',
       'userBooks',
       'userMsg',
       'productDetails',
@@ -378,7 +377,7 @@ export default {
   },
   async mounted() {
     this.$q.loading.show();
-
+    this.user = await getCurrentUser();
     if (this.$route.name === 'Read') {
       // 如果是有帳號的使用者
       this.anonymous = false;

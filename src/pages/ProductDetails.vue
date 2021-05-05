@@ -14,7 +14,7 @@
     <div v-if="loading" class="flex justify-center q-pt-lg">
       <q-spinner class="q-mx-auto" color="primary" size="3em" :thickness="10" />
     </div>
-    <div v-else-if="productDetailsMsg.length === 0">
+    <div v-else>
       <q-card v-if="productDetails && productDetails.title" class="maxw90 q-mx-auto" bordered>
         <q-card-section horizontal>
           <q-card-section class="px-1-xs">
@@ -32,7 +32,13 @@
                 size="lg"
                 color="accent"
               >免費試閱</q-btn>
-              <q-btn unelevated size="lg" color="primary">購買</q-btn>
+              <q-btn
+                @click="buy(productDetails.id)"
+                :loading="btnLoading"
+                unelevated
+                size="lg"
+                color="primary"
+              >購買</q-btn>
             </q-card-actions>
           </q-card-section>
         </q-card-section>
@@ -47,27 +53,64 @@
         </q-card-section>
       </q-card>
     </div>
-    <h4 v-else class="text-h6 text-center">發生錯誤</h4>
   </q-page>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import { getCurrentUser } from 'boot/firebase.config';
 
 export default {
   name: 'ProductDetails',
   data() {
     return {
       loading: true,
+      btnLoading: false,
     };
   },
   computed: {
     ...mapGetters(['productDetails', 'productDetailsMsg']),
   },
+  methods: {
+    async buy(bid) {
+      this.btnLoading = true;
+      const user = await getCurrentUser();
+      if (!user || !user.uid) {
+        this.$router.push({ name: 'Login' });
+      } else {
+        const { uid } = user;
+        const { title, image, read } = this.productDetails;
+        const progress = 0;
+        const isEnabled = false;
+        await this.$store.dispatch('addNewOrder', {
+          uid,
+          bid,
+          title,
+          image,
+          read,
+          progress,
+          isEnabled,
+        });
+        if (this.productDetailsMsg) {
+          this.$q.notify({
+            message: this.productDetailsMsg,
+            color: 'primary',
+            position: 'top',
+          });
+        } else {
+          this.$q.dialog({
+            title: '訂購成功，請記得付款',
+            message: '付款方式請參考首頁的說明',
+          });
+        }
+      }
+      this.btnLoading = false;
+    },
+  },
   async mounted() {
     this.loading = true;
     await this.$store.dispatch('fetchProductsDetails', this.$route.params.id);
-    if (this.productDetailsMsg.length > 0) {
+    if (this.productDetailsMsg) {
       this.$q.dialog({
         title: '發生錯誤',
         message: this.productDetailsMsg,

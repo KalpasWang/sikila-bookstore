@@ -3,10 +3,6 @@ export function someGetter (state) {
 }
 */
 
-export function user(state) {
-  return state.user;
-}
-
 export function userBooks(state) {
   return state.userBooks;
 }

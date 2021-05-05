@@ -21,6 +21,8 @@
       <q-card-actions class="q-px-lg q-pt-md">
         <q-btn
           @click="login"
+          :disable="!isBtnEnabled"
+          :loading="isLoading"
           unelevated
           size="lg"
           color="primary"
@@ -44,14 +46,16 @@ export default {
     return {
       email: '',
       password: '',
+      isBtnEnabled: true,
+      isLoading: false,
     };
   },
   methods: {
     async login() {
       try {
-        this.$q.loading.show();
+        this.isLoading = true;
+        this.isBtnEnabled = false;
         await projectAuth.signInWithEmailAndPassword(this.email, this.password);
-        // console.log(credentials);
         this.$router.push({ name: 'MyBook' });
       } catch (err) {
         this.$q.dialog({
@@ -59,7 +63,8 @@ export default {
           message: `帳號或密碼錯誤：${err.message}`,
         });
       } finally {
-        this.$q.loading.hide();
+        this.isLoading = false;
+        this.isBtnEnabled = true;
       }
     },
   },

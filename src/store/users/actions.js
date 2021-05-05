@@ -2,20 +2,7 @@
 export function someAction (context) {
 }
 */
-import { projectFirestore, projectAuth } from 'boot/firebase.config';
-
-export async function syncUserState({ commit }) {
-  commit('setUser', projectAuth.currentUser);
-
-  projectAuth.onAuthStateChanged((user) => {
-    if (user) {
-      const { uid, email, displayName } = user;
-      commit('setUser', { uid, email, displayName });
-    } else {
-      commit('setUser', null);
-    }
-  });
-}
+import { projectFirestore } from 'boot/firebase.config';
 
 export async function fetchUserBooks({ commit }, id) {
   try {

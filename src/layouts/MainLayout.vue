@@ -58,10 +58,16 @@ export default {
   methods: {
     isActive(name) {
       if (this.$route.name === name) {
-        return 'bg-blue-1 text-primary';
+        return 'bg-blue-1 text-primary blue-tab-border';
       }
       return '';
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.blue-tab-border {
+  border-bottom: 2px solid $primary;
+}
+</style>

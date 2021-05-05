@@ -2,7 +2,7 @@
 export function someAction (context) {
 }
 */
-import { projectFirestore } from 'boot/firebase.config';
+import { projectFirestore, timestamp } from 'boot/firebase.config';
 
 export async function fetchProducts({ commit }) {
   try {
@@ -33,6 +33,26 @@ export async function fetchProductsDetails({ commit }, id) {
       ...res.data(),
       id: res.id,
       description: description.replaceAll(' ', '\n'),
+    });
+    commit('setProductDetailsMsg', '');
+  } catch (error) {
+    commit('setProductDetailsMsg', error.message);
+  }
+}
+
+export async function addNewOrder({ commit }, payload) {
+  try {
+    const res = await projectFirestore
+      .collection('userBooks')
+      .where('uid', '==', payload.uid)
+      .where('bid', '==', payload.bid)
+      .get();
+    if (!res.empty) {
+      throw new Error('你已經購買了這本書');
+    }
+    await projectFirestore.collection('userBooks').add({
+      ...payload,
+      createdAt: timestamp(),
     });
     commit('setProductDetailsMsg', '');
   } catch (error) {
