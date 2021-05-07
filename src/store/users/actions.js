@@ -22,6 +22,24 @@ export async function fetchUserBooks({ commit }, id) {
   }
 }
 
+export async function fetchUserOrders({ commit }) {
+  try {
+    const res = await projectFirestore
+      .collection('userBooks')
+      .where('isEnabled', '==', false)
+      .get();
+    commit('setUserMsg', '');
+    if (!res.empty) {
+      const orders = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      return orders;
+    }
+    return [];
+  } catch (error) {
+    commit('setUserMsg', error.message);
+    return [];
+  }
+}
+
 // export async function patchUserData({ commit }, { id, fontSize, theme }) {
 //   try {
 //     const res = await api.patch(`/usersData/${id}`, { fontSize, theme });

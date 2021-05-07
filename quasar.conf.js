@@ -14,6 +14,9 @@ module.exports = function(/* ctx */) {
   return {
     // https://v1.quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
+    htmlVariables: {
+      title: '觀音之愛電子書坊',
+    },
 
     // https://v1.quasar.dev/quasar-cli/prefetch-feature
     // preFetch: true,
