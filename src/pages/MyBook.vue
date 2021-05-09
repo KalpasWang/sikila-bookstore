@@ -5,6 +5,7 @@
         v-if="user && user.uid"
         color="primary"
         auto-close
+        no-caps
         unelevated
         :label="`${user.displayName} 的帳號`"
       >
@@ -98,7 +99,10 @@ export default {
       }
       await this.$store.dispatch('fetchUserBooks', this.user.uid);
       if (this.userMsg) {
-        throw new Error(this.userMsg);
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: this.userMsg,
+        });
       }
     },
   },

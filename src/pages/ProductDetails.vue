@@ -78,12 +78,14 @@ export default {
       if (!user || !user.uid) {
         this.$router.push({ name: 'Login' });
       } else {
-        const { uid } = user;
+        const { uid, email, displayName } = user;
         const { title, image, read } = this.productDetails;
         const progress = 0;
         const isEnabled = false;
         await this.$store.dispatch('addNewOrder', {
           uid,
+          email,
+          displayName,
           bid,
           title,
           image,

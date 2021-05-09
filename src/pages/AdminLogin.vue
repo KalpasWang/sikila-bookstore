@@ -60,7 +60,7 @@ export default {
           throw new Error('帳號或密碼錯誤');
         }
         await projectAuth.signInWithEmailAndPassword(this.email, this.password);
-        this.$router.push({ name: 'MyBook' });
+        this.$router.push({ name: 'Admin' });
       } catch (err) {
         this.$q.dialog({
           title: '發生錯誤',

@@ -28,13 +28,13 @@
     </div>
     <!-- 書籍列表 -->
     <h2 class="text-h4 custom-headings q-mt-xl">所有書籍</h2>
-    <div v-if="loading" class="col-auto q-mx-auto">
+    <div v-if="loading" class="flex flex-center">
       <!-- 載入資料時顯示旋轉特效 -->
       <q-spinner color="primary" size="3em" :thickness="10" />
     </div>
-    <div v-else-if="productsMsg.length === 0">
+    <div v-else>
       <div
-        v-if="products && products.length > 0"
+        v-if="products && products.length"
         class="row justify-center items-start q-gutter-md q-px-md"
       >
         <!-- 書籍資訊卡片 -->
@@ -67,9 +67,8 @@
           </q-card-actions>
         </q-card>
       </div>
-      <h4 v-else-if="products && products.length === 0" class="text-h6 text-center">尚未有書籍</h4>
+      <h4 v-else-if="products && !products.length" class="text-h6 text-center">尚未有書籍</h4>
     </div>
-    <h4 v-else class="text-h6 text-center">發生錯誤</h4>
   </q-page>
 </template>
 
@@ -87,10 +86,10 @@ export default {
   computed: {
     ...mapGetters(['products', 'productsMsg']),
   },
-  mounted() {
+  async mounted() {
     this.loading = true;
-    this.$store.dispatch('fetchProducts');
-    if (this.productsMsg.length > 0) {
+    await this.$store.dispatch('fetchProducts');
+    if (this.productsMsg) {
       this.$q.dialog({
         title: '發生錯誤',
         message: this.productsMsg,

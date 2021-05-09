@@ -14,8 +14,6 @@ export async function fetchUserBooks({ commit }, id) {
       const books = res.docs.map((doc) => ({ ...doc.data() }));
       commit('setUserBooks', books);
       commit('setUserMsg', '');
-    } else {
-      throw Error('目前還沒有書籍');
     }
   } catch (error) {
     commit('setUserMsg', error.message);
@@ -31,12 +29,34 @@ export async function fetchUserOrders({ commit }) {
     commit('setUserMsg', '');
     if (!res.empty) {
       const orders = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      return orders;
+      return orders.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
     }
     return [];
   } catch (error) {
     commit('setUserMsg', error.message);
     return [];
+  }
+}
+
+export async function enableUserOrder({ commit }, id) {
+  try {
+    const docRef = projectFirestore.collection('userBooks').doc(id);
+    await docRef.update({
+      isEnabled: true,
+    });
+    commit('setUserMsg', '');
+  } catch (error) {
+    commit('setUserMsg', error.message);
+  }
+}
+
+export async function deleteUserOrder({ commit }, id) {
+  try {
+    const docRef = projectFirestore.collection('userBooks').doc(id);
+    await docRef.delete();
+    commit('setUserMsg', '');
+  } catch (error) {
+    commit('setUserMsg', error.message);
   }
 }
 

@@ -12,6 +12,7 @@
             <span class="text-grey-8 text-weight-regular">&nbsp;書坊管理</span>
           </h1>
         </q-toolbar-title>
+        <q-btn @click="logout" color="accent" label="登出" unelevated size="md" />
       </q-toolbar>
     </q-header>
 
@@ -31,13 +32,30 @@
 </template>
 
 <script>
-export default {
-  // name: 'LayoutName',
+import { projectAuth } from 'boot/firebase.config';
 
+export default {
+  name: 'AdminLogin',
   data() {
     return {
       leftDrawer: false,
     };
+  },
+  methods: {
+    async logout() {
+      try {
+        this.$q.loading.show();
+        await projectAuth.signOut();
+        this.$router.push({ name: 'Home' });
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      } finally {
+        this.$q.loading.hide();
+      }
+    },
   },
 };
 </script>
