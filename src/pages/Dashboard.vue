@@ -9,12 +9,20 @@
       label="回首頁"
       icon="arrow_back_ios"
     />
-    <h2 class="text-h4 custom-headings">Dashboard</h2>
+    <h2 class="text-h4 custom-headings">訂單管理</h2>
     <div v-if="loading" class="flex flex-center q-pt-md">
       <!-- 載入資料時顯示旋轉特效 -->
       <q-spinner color="primary" size="3em" :thickness="10" />
     </div>
-    <q-table v-else title="目前訂單" :data="formattingData" :columns="columns" row-key="name">
+    <q-table
+      v-else
+      :title="`目前訂單總數：${ordersData.length}`"
+      :data="formattingData"
+      :columns="columns"
+      :loading="processing"
+      :pagination="pagination"
+      row-key="name"
+    >
       <template v-slot:body-cell-enable="props">
         <q-td :props="props">
           <div>
@@ -56,6 +64,7 @@ export default {
     return {
       ordersData: [],
       loading: false,
+      processing: false,
       disableBtn: false,
       columns: [
         {
@@ -103,6 +112,9 @@ export default {
           field: 'delete',
         },
       ],
+      pagination: {
+        rowsPerPage: 10,
+      },
     };
   },
   computed: {
@@ -132,6 +144,7 @@ export default {
         // eslint-disable-next-line space-before-function-paren
         .onOk(async () => {
           this.disableBtn = true;
+          this.processing = true;
           await this.$store.dispatch('enableUserOrder', row.id);
           if (this.userMsg) {
             this.$q.dialog({
@@ -143,6 +156,7 @@ export default {
             this.ordersData.splice(idx, 1);
           }
           this.disableBtn = false;
+          this.processing = false;
         });
     },
     deleteOrder(row) {
@@ -156,6 +170,7 @@ export default {
         // eslint-disable-next-line space-before-function-paren
         .onOk(async () => {
           this.disableBtn = true;
+          this.processing = true;
           await this.$store.dispatch('deleteUserOrder', row.id);
           if (this.userMsg) {
             this.$q.dialog({
@@ -167,6 +182,7 @@ export default {
             this.ordersData.splice(idx, 1);
           }
           this.disableBtn = false;
+          this.processing = false;
         });
     },
     transformTime(timestamp) {

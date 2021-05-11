@@ -1,14 +1,15 @@
 {
   "name": "sikila-bookstore",
   "version": "0.0.1",
-  "description": "Sikila ebook store",
-  "productName": "Sikila 電子書坊",
+  "description": "觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買與閱讀電子書",
+  "productName": "觀音之愛電子書坊",
   "author": "Kalpas Wang <wf6212@gmail.com>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
-    "json": "json-server --watch data/db.json"
+    "json": "json-server --watch data/db.json",
+    "build": "quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -26,7 +27,8 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-vue": "^7.7.0",
     "eslint-webpack-plugin": "^2.4.0",
-    "json-server": "^0.16.3"
+    "json-server": "^0.16.3",
+    "workbox-webpack-plugin": "^5.1.4"
   },
   "browserslist": [
     "ie 11",

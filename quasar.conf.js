@@ -14,9 +14,6 @@ module.exports = function(/* ctx */) {
   return {
     // https://v1.quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
-    htmlVariables: {
-      title: '觀音之愛電子書坊',
-    },
 
     // https://v1.quasar.dev/quasar-cli/prefetch-feature
     // preFetch: true,
@@ -24,7 +21,7 @@ module.exports = function(/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v1.quasar.dev/quasar-cli/boot-files
-    boot: ['firebase.config', 'axios', 'filters'],
+    boot: ['firebase.config', 'filters'],
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: ['app.scss'],
@@ -117,7 +114,8 @@ module.exports = function(/* ctx */) {
       manifest: {
         name: '觀音之愛電子書坊',
         short_name: '觀音之愛電子書坊',
-        description: 'Sikila ebook website',
+        description:
+          '觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買與閱讀電子書',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
