@@ -117,7 +117,8 @@ module.exports = function(/* ctx */) {
       manifest: {
         name: '觀音之愛電子書坊',
         short_name: '觀音之愛電子書坊',
-        description: 'Sikila ebook website',
+        description:
+          '觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買與閱讀電子書',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

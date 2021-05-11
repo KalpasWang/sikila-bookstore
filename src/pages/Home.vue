@@ -14,11 +14,20 @@
             <div class="text-h6">購買須知（購買前請先閱讀）</div>
           </q-card-section>
           <q-card-section class="q-pt-none text-body1 text-weight-light">
-            <p>我是Sikila，這名稱是 觀音菩薩為我命名的，意思是 --- 到彼岸者。我居住在中華民國台灣。</p>
-            <p>在一個不經意的時刻，高次元振動頻率的 觀音菩薩上師，藉由我的口說出一連串的高振動語言，有人定義這語言為「光語」，實際上這只是某一次元空間的語言。</p>
-            <p>原來這是在過去世 觀音菩薩對我的承諾，祂們應約來了。我開啟了更大視野～～我也體會了更多的愛～～～</p>
-            <p>我的主要目的是傳遞 觀音上師的訊息，以協助地球人類的靈魂從第三次元提昇到第五次元的振動頻率。</p>
-            <p>這裡的資訊 -- 觀音之愛，所說的並非是終極真相，它無法協助你達到'開悟'境界，但能協助處於第三次元的靈魂快速提昇，而這也是目前地球上99％以上的人類所需要的。</p>
+            <ol class="q-pl-md">
+              <li class="q-mb-md">如果確定要購買書籍，請先按右上角的我的書庫，沒有帳號的情況預設會跳出登入頁面，請點選『還沒有帳號嗎？』進入註冊頁面</li>
+              <li class="q-mb-md">
+                輸入你的 Email，暱稱與6個字以上的密碼，如果註冊失敗可能是 Email
+                已經有註冊過了或是密碼少於六個字，如果是其他原因導致無法註冊，請寄信到
+                <a
+                  href="mailto:sikilabookstore@gmail.com"
+                >sikilabookstore@gmail.com</a>
+              </li>
+              <li
+                class="q-mb-md"
+              >註冊成功會跳轉到我的書庫頁面，可以看到目前沒有書籍，請再到首頁並點選你要購買的書籍的介紹頁面，點選購買，如果成功會看到一個訂購成功的通知</li>
+              <li class="q-mb-md">請按照頁面上標的價錢匯款</li>
+            </ol>
           </q-card-section>
           <q-card-actions align="right">
             <q-btn flat label="關閉" color="primary" v-close-popup />

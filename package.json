@@ -1,10 +1,9 @@
 {
   "name": "sikila-bookstore",
   "version": "0.0.1",
-  "description": "Sikila ebook store",
-  "productName": "Sikila 電子書坊",
+  "description": "觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買與閱讀電子書",
+  "productName": "觀音之愛電子書坊",
   "author": "Kalpas Wang <wf6212@gmail.com>",
-  "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",

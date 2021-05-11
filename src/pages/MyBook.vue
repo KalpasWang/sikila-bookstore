@@ -1,6 +1,6 @@
 <template>
   <q-page class="my-container-sm" padding>
-    <div class="q-py-md q-px-xl flex justify-end">
+    <div class="q-py-md q-px-md flex justify-end">
       <q-btn-dropdown
         v-if="user && user.uid"
         color="primary"
