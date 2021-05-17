@@ -1,7 +1,7 @@
 {
   "name": "sikila-bookstore",
   "version": "0.0.1",
-  "description": "觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買與閱讀電子書",
+  "description": "觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買、下載與閱讀電子書",
   "productName": "觀音之愛電子書坊",
   "author": "Kalpas Wang <wf6212@gmail.com>",
   "scripts": {
@@ -31,13 +31,13 @@
     "ie 11",
     "last 10 Chrome versions",
     "last 10 Firefox versions",
-    "last 4 Edge versions",
-    "last 7 Safari versions",
-    "last 8 Android versions",
-    "last 8 ChromeAndroid versions",
-    "last 8 FirefoxAndroid versions",
+    "last 10 Edge versions",
+    "last 10 Safari versions",
+    "last 10 Android versions",
+    "last 10 ChromeAndroid versions",
+    "last 10 FirefoxAndroid versions",
     "last 10 iOS versions",
-    "last 5 Opera versions"
+    "last 10 Opera versions"
   ],
   "engines": {
     "node": ">= 10.18.1",

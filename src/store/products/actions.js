@@ -32,7 +32,7 @@ export async function fetchProductsDetails({ commit }, id) {
     commit('setProductDetails', {
       ...res.data(),
       id: res.id,
-      description: description.replaceAll(' ', '\n'),
+      description: description.replace(/\s{2,}/g, '\n\n'),
     });
     commit('setProductDetailsMsg', '');
   } catch (error) {

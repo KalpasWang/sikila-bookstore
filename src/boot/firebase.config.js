@@ -43,7 +43,7 @@ async function getCurrentUser() {
       const timerId = setInterval(() => {
         // 超過3秒就 reject
         if (Date.now() - t1 >= 3000) {
-          reject();
+          reject('無法取得使用者');
         }
         if (typeof user === 'object') {
           clearInterval(timerId);

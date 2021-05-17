@@ -41,10 +41,6 @@ body {
   max-height: 100%;
 }
 
-.maxw90 {
-  max-width: 90%;
-}
-
 .static {
   position: static !important;
 }
@@ -91,22 +87,6 @@ body {
   }
 }
 
-.px-1-xs {
-  @media (max-width: $breakpoint-xs-max) {
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-}
-
-.text-h4-xs {
-  @media (max-width: $breakpoint-xs-max) {
-    font-size: 2.125rem;
-    font-weight: 400;
-    line-height: 2.5rem;
-    letter-spacing: 0.00735em;
-  }
-}
-
 .small-only {
   @media (min-width: $breakpoint-sm-min) {
     display: none;
@@ -117,4 +97,25 @@ body {
   @media (max-width: $breakpoint-xs-max) {
     display: none;
   }
+}
+
+// vue transition class
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s linear;
+}
+
+.slide-up-enter,
+.slide-up-leave-to {
+  transform: translateY(-110%);
+}
+
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s linear;
+}
+
+.slide-down-enter,
+.slide-down-leave-to {
+  transform: translateY(110%);
 }

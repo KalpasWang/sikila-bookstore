@@ -10,3 +10,7 @@ export function setUserBooks(state, value) {
 export function setUserMsg(state, value) {
   state.userMsg = value;
 }
+
+export function setUserSetting(state, value) {
+  state.userSetting = value;
+}

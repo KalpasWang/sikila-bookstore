@@ -20,6 +20,40 @@ export async function fetchUserBooks({ commit }, id) {
   }
 }
 
+export async function fetchOneUserBook({ commit }, { uid, bid }) {
+  try {
+    const res = await projectFirestore
+      .collection('userBooks')
+      .where('uid', '==', uid)
+      .where('bid', '==', bid)
+      .get();
+    if (res.empty) {
+      throw new Error('找不到這本書');
+    }
+    const books = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    return books[0];
+  } catch (error) {
+    commit('setUserMsg', error.message);
+    return {};
+  }
+}
+
+export async function fetchUserSetting({ commit }, id) {
+  try {
+    const ref = projectFirestore.collection('userSetting').doc(id);
+    const res = await ref.get();
+    if (!res.exists) {
+      await ref.set({ fontSize: 20, theme: 0 });
+      commit('setUserSetting', { fontSize: 20, theme: 0 });
+    } else {
+      commit('setUserSetting', res.data());
+    }
+    commit('setUserMsg', '');
+  } catch (error) {
+    commit('setUserMsg', error.message);
+  }
+}
+
 export async function fetchUserOrders({ commit }) {
   try {
     const res = await projectFirestore
@@ -60,16 +94,27 @@ export async function deleteUserOrder({ commit }, id) {
   }
 }
 
-// export async function patchUserData({ commit }, { id, fontSize, theme }) {
-//   try {
-//     const res = await api.patch(`/usersData/${id}`, { fontSize, theme });
-//     if (res.status === 200) {
-//       commit('setUserData', res.data);
-//       commit('setUserDataMsg', '');
-//     } else {
-//       throw Error('無法更新使用者資料');
-//     }
-//   } catch (error) {
-//     commit('setUserDataMsg', error.message);
-//   }
-// }
+export async function updateUserSetting({ commit }, { id, fontSize, theme }) {
+  try {
+    const docRef = projectFirestore.collection('userSetting').doc(id);
+    await docRef.update({
+      fontSize,
+      theme,
+    });
+    commit('setUserMsg', '');
+  } catch (error) {
+    commit('setUserMsg', error.message);
+  }
+}
+
+export async function updateUserBookProgress({ commit }, { id, progress }) {
+  try {
+    const docRef = projectFirestore.collection('userBooks').doc(id);
+    await docRef.update({
+      progress,
+    });
+    commit('setUserMsg', '');
+  } catch (error) {
+    commit('setUserMsg', error.message);
+  }
+}

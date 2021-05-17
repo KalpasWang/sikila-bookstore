@@ -1,6 +1,15 @@
 <template>
-  <div class="q-pa-md flex flex-center window-height">
-    <q-card square class="shadow-2" style="width: 300px;max-width:90%;">
+  <div class="q-pa-md column flex-center window-height">
+    <q-btn
+      :to="{ name: 'Home'}"
+      rounded
+      outline
+      color="secondary"
+      label="回首頁"
+      icon="arrow_back_ios"
+      class="q-mb-lg"
+    />
+    <q-card square class="shadow-2">
       <q-card-section class="bg-primary">
         <h4 class="text-h5 text-white q-my-md">登入管理員帳號</h4>
       </q-card-section>
@@ -18,7 +27,7 @@
           </q-input>
         </q-form>
       </q-card-section>
-      <q-card-actions class="q-px-lg q-pt-md">
+      <q-card-actions class="q-px-lg q-pt-md q-mb-lg">
         <q-btn
           @click="login"
           :disable="!isBtnEnabled"

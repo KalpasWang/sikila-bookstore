@@ -2,17 +2,17 @@
   <div class="window-height">
     <q-layout view="lHh lpr lFf" container class="shadow-2 rounded-borders">
       <!-- header -->
-      <q-slide-transition :duration="300">
+      <transition name="slide-up">
         <q-header elevated v-show="showMenu">
           <q-toolbar>
             <q-btn @click="$router.go(-1)" flat round dense icon="arrow_back" />
             <q-toolbar-title>{{ title }}</q-toolbar-title>
           </q-toolbar>
         </q-header>
-      </q-slide-transition>
+      </transition>
 
       <!-- footer -->
-      <q-slide-transition :duration="300">
+      <transition name="slide-down">
         <q-footer v-show="showMenu" elevated>
           <!-- 選單內容 -->
           <q-tab-panels v-model="setting" class="bg-grey-1 text-black">
@@ -81,7 +81,7 @@
             <q-tab @click="showToc = !showToc" name="toc" label="目錄" icon="toc" />
           </q-tabs>
         </q-footer>
-      </q-slide-transition>
+      </transition>
 
       <!-- 目錄 -->
       <q-drawer
@@ -137,6 +137,7 @@ export default {
       // 書籍資訊
       bookLink: '',
       title: '',
+      userBookId: null,
       // 使用者資訊
       user: null,
       anonymous: true,
@@ -190,6 +191,7 @@ export default {
     ...mapGetters([
       'userBooks',
       'userMsg',
+      'userSetting',
       'productDetails',
       'productDetailsMsg',
     ]),
@@ -247,8 +249,14 @@ export default {
   methods: {
     // 跳轉到指定的位置
     jumpTo(href) {
-      this.rendition.display(href);
-      this.hideMenu();
+      this.rendition.display(href).then(() => {
+        const currentLocation = this.rendition.currentLocation();
+        const progress = this.locations.percentageFromCfi(
+          currentLocation.start.cfi
+        );
+        this.progress = progress * 100;
+        this.hideMenu();
+      });
     },
     hideMenu() {
       this.showMenu = false;
@@ -329,18 +337,30 @@ export default {
       }
     },
     // 傳送使用者資料到後端
-    async patchUserData() {
-      // await this.$store.dispatch('patchUserData', {
-      //   id: '00001',
-      //   fontSize: this.fontSize,
-      //   theme: this.themeIndex,
-      // });
-      // if (this.userMsg) {
-      //   this.$q.dialog({
-      //     title: '發生錯誤',
-      //     message: this.userMsg,
-      //   });
-      // }
+    async patchUserSetting() {
+      await this.$store.dispatch('updateUserSetting', {
+        id: this.user.uid,
+        fontSize: this.fontSize,
+        theme: this.themeIndex,
+      });
+      if (this.userMsg) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: this.userMsg,
+        });
+      }
+    },
+    async updateProgress() {
+      await this.$store.dispatch('updateUserBookProgress', {
+        id: this.userBookId,
+        progress: this.progress,
+      });
+      if (this.userMsg) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: this.userMsg,
+        });
+      }
     },
     // 渲染 epub 檔案
     async showEpub(url) {
@@ -367,39 +387,49 @@ export default {
           throw new Error('無法開啟書籍');
         });
     },
-    // makeRangeCfi(startCfi, endCfi) {
-    //   const cfiBase = startCfi.replace(/!.*/, '');
-    //   const cfiStart = startCfi.replace(/.*!/, '').replace(/\)$/, '');
-    //   const cfiEnd = endCfi.replace(/.*!/, '').replace(/\)$/, '');
-    //   const cfiRange = `${cfiBase}!,${cfiStart},${cfiEnd})`;
-    //   return cfiRange;
-    // },
   },
   async mounted() {
     this.$q.loading.show();
-    this.user = await getCurrentUser();
     if (this.$route.name === 'Read') {
-      // 如果是有帳號的使用者
-      this.anonymous = false;
       try {
-        await this.$store.dispatch('fetchUserBooks', this.user.uid);
+        this.user = await getCurrentUser();
+        // 沒有帳號無法閱讀
+        if (!this.user || !this.user.uid) {
+          throw new Error('請登入帳號');
+        }
+        // 假設是有帳號的使用者
+        this.anonymous = false;
+        // 取得使用者的設定
+        await this.$store.dispatch('fetchUserSetting', this.user.uid);
         if (this.userMsg) {
           throw new Error(this.userMsg);
         }
-        // this.fontSize = this.userData.fontSize;
-        // this.themeIndex = this.userData.theme;
-        const vm = this;
-        const book = this.userBooks.find(
-          (item) => item.bid === vm.$route.params.id
-        );
+        // 套用使用者設定的自行與主題
+        if (this.userSetting.fontSize) {
+          this.fontSize = this.userSetting.fontSize;
+          this.themeIndex = this.userSetting.theme;
+        }
+        // 取得使用者的書籍
+        const book = await this.$store.dispatch('fetchOneUserBook', {
+          uid: this.user.uid,
+          bid: this.$route.params.id,
+        });
+        if (this.userMsg) {
+          throw new Error(this.userMsg);
+        }
+        // const vm = this;
+        // const book = this.userBooks.find(
+        //   (item) => item.bid === vm.$route.params.id
+        // );
         if (!book || !book.read) {
           throw new Error('找不到這本書');
         }
         this.bookLink = book.read;
+        this.userBookId = book.id;
         this.title = book.title;
         this.progress = book.progress || 0;
-        const file = await this.getBook(this.bookLink);
-        await this.showEpub(file);
+        const url = await this.getBook(this.bookLink);
+        await this.showEpub(url);
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',
@@ -409,9 +439,9 @@ export default {
         this.$q.loading.hide();
       }
     } else {
-      // 如果是匿名的使用者
-      this.anonymous = true;
       try {
+        // 假設是一般的使用者
+        this.anonymous = true;
         await this.$store.dispatch(
           'fetchProductsDetails',
           this.$route.params.id
@@ -424,8 +454,8 @@ export default {
         if (!this.bookLink) {
           throw new Error('找不到這本書');
         }
-        const file = await this.getBook(this.bookLink);
-        await this.showEpub(file);
+        const url = await this.getBook(this.bookLink);
+        await this.showEpub(url);
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',
@@ -437,9 +467,11 @@ export default {
     }
   },
   beforeDestroy() {
-    if (!this.anonymous && this.userData && this.userData.id) {
-      this.patchUserData();
+    if (!this.anonymous && this.userSetting) {
+      this.patchUserSetting();
+      this.updateProgress();
     }
+    this.$q.loading.hide();
     window.removeEventListener('resize', this.resizeEpub);
   },
 };

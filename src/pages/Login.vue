@@ -1,6 +1,16 @@
 <template>
-  <q-page padding class="flex flex-center">
-    <q-card square class="shadow-2" style="width: 300px;max-width:90%;">
+  <q-page padding class="flex justify-center">
+    <div class="q-my-lg q-px-md full-width">
+      <q-btn
+        @click="$router.go(-1)"
+        rounded
+        outline
+        color="secondary"
+        label="回上一頁"
+        icon="arrow_back_ios"
+      />
+    </div>
+    <q-card square class="shadow-2">
       <q-card-section class="bg-primary">
         <h4 class="text-h5 text-white q-my-md">登入帳號</h4>
       </q-card-section>

@@ -10,3 +10,7 @@ export function userBooks(state) {
 export function userMsg(state) {
   return state.userMsg;
 }
+
+export function userSetting(state) {
+  return state.userSetting;
+}

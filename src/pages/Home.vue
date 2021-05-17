@@ -70,6 +70,7 @@
             <q-btn
               :to="{ name: 'ProductDetails', params: { id: item.id } }"
               unelevated
+              size="lg"
               color="primary"
               class="full-width"
             >查看更多</q-btn>
