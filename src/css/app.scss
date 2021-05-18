@@ -1,1 +1,121 @@
 // app global css in SCSS form
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans TC', 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.text-shadow {
+  text-shadow: -1px 0 lightgrey, 0 1px lightgrey, 1px 0 lightgrey,
+    0 -1px lightgrey;
+}
+
+.custom-headings {
+  overflow: hidden;
+  text-align: center;
+
+  &::after,
+  &::before {
+    content: '';
+    background-color: #1976d2;
+    display: inline-block;
+    height: 3px;
+    position: relative;
+    width: 20%;
+    max-width: 100px;
+    vertical-align: middle;
+  }
+
+  &::before {
+    right: 0.5em;
+    margin-left: -50%;
+  }
+
+  &::after {
+    left: 0.5em;
+    margin-right: -50%;
+  }
+}
+
+.maxh100 {
+  max-height: 100%;
+}
+
+.static {
+  position: static !important;
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+
+.paragraph {
+  white-space: pre-line;
+}
+
+.q-img__content {
+  transition: all 0.25s linear;
+  &:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.q-btn__content > .q-icon {
+  margin-right: 0;
+}
+
+.my-container-sm {
+  max-width: 100%;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (min-width: 768px) {
+    width: 720px;
+  }
+
+  @media (min-width: 991px) {
+    width: 960px;
+  }
+
+  @media (min-width: 1200px) {
+    width: 1140px;
+  }
+
+  @media (min-width: 1400px) {
+    width: 1320px;
+  }
+}
+
+.small-only {
+  @media (min-width: $breakpoint-sm-min) {
+    display: none;
+  }
+}
+
+.large-only {
+  @media (max-width: $breakpoint-xs-max) {
+    display: none;
+  }
+}
+
+// vue transition class
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s linear;
+}
+
+.slide-up-enter,
+.slide-up-leave-to {
+  transform: translateY(-110%);
+}
+
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s linear;
+}
+
+.slide-down-enter,
+.slide-down-leave-to {
+  transform: translateY(110%);
+}

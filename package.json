@@ -1,18 +1,20 @@
 {
   "name": "sikila-bookstore",
   "version": "0.0.1",
-  "description": "Sikila ebook store",
-  "productName": "Sikila 電子書坊",
+  "description": "觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買、下載與閱讀電子書",
+  "productName": "觀音之愛電子書坊",
   "author": "Kalpas Wang <wf6212@gmail.com>",
-  "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "json": "json-server --watch data/db.json"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "epubjs": "^0.3.88",
+    "firebase": "^8.4.2",
     "quasar": "^1.0.0"
   },
   "devDependencies": {
@@ -22,19 +24,20 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-vue": "^7.7.0",
-    "eslint-webpack-plugin": "^2.4.0"
+    "eslint-webpack-plugin": "^2.4.0",
+    "json-server": "^0.16.3"
   },
   "browserslist": [
     "ie 11",
     "last 10 Chrome versions",
     "last 10 Firefox versions",
-    "last 4 Edge versions",
-    "last 7 Safari versions",
-    "last 8 Android versions",
-    "last 8 ChromeAndroid versions",
-    "last 8 FirefoxAndroid versions",
+    "last 10 Edge versions",
+    "last 10 Safari versions",
+    "last 10 Android versions",
+    "last 10 ChromeAndroid versions",
+    "last 10 FirefoxAndroid versions",
     "last 10 iOS versions",
-    "last 5 Opera versions"
+    "last 10 Opera versions"
   ],
   "engines": {
     "node": ">= 10.18.1",

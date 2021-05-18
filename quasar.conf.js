@@ -10,10 +10,13 @@
 /* eslint global-require: 0 */
 const ESLintPlugin = require('eslint-webpack-plugin');
 
-module.exports = function (/* ctx */) {
+module.exports = function(/* ctx */) {
   return {
     // https://v1.quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
+    htmlVariables: {
+      title: '觀音之愛電子書坊',
+    },
 
     // https://v1.quasar.dev/quasar-cli/prefetch-feature
     // preFetch: true,
@@ -21,15 +24,10 @@ module.exports = function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v1.quasar.dev/quasar-cli/boot-files
-    boot: [
-
-      'axios',
-    ],
+    boot: ['firebase.config', 'axios', 'filters'],
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-    css: [
-      'app.scss',
-    ],
+    css: ['app.scss'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -47,7 +45,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
 
       // transpile: false,
 
@@ -68,7 +66,8 @@ module.exports = function (/* ctx */) {
       // https://v1.quasar.dev/quasar-cli/handling-webpack
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
       chainWebpack(chain) {
-        chain.plugin('eslint-webpack-plugin')
+        chain
+          .plugin('eslint-webpack-plugin')
           .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }]);
       },
     },
@@ -99,7 +98,7 @@ module.exports = function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify', 'Loading', 'Dialog'],
     },
 
     // animations: 'all', // --- includes all animations
@@ -116,9 +115,10 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Sikila 電子書坊',
-        short_name: 'Sikila 電子書坊',
-        description: 'Sikila ebook store',
+        name: '觀音之愛電子書坊',
+        short_name: '觀音之愛電子書坊',
+        description:
+          '觀音之愛電子書坊提供 Sikila 編著的書籍，可以讓您預覽，購買與閱讀電子書',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -169,13 +169,11 @@ module.exports = function (/* ctx */) {
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-
         // OS X / Mac App Store
         // appBundleId: '',
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
-
         // Windows only
         // win32metadata: { ... }
       },
