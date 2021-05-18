@@ -137,7 +137,7 @@ export default {
       // 書籍資訊
       bookLink: '',
       title: '',
-      userBookId: null,
+      myBook: null,
       // 使用者資訊
       user: null,
       anonymous: true,
@@ -158,6 +158,10 @@ export default {
       fontSizeMin: 16,
       fontSizeMax: 36,
       themeIndex: 0,
+      // 資料庫事件
+      progressChanged: false,
+      fontSizeOrThemeChanged: false,
+      timer: null,
       // 背景主題選項
       themeList: [
         {
@@ -211,6 +215,7 @@ export default {
         if (value !== this.progress) {
           this.setProgress(value);
           this.progress = value;
+          this.progressChanged = true;
         }
       },
     },
@@ -227,6 +232,7 @@ export default {
         }
         this.setFontSize(value);
         this.fontSize = value;
+        this.fontSizeOrThemeChanged = true;
       },
     },
     themeIndexModel: {
@@ -236,6 +242,7 @@ export default {
       set(value) {
         this.setTheme(value);
         this.themeIndex = value;
+        this.fontSizeOrThemeChanged = true;
       },
     },
   },
@@ -255,6 +262,7 @@ export default {
           currentLocation.start.cfi
         );
         this.progress = progress * 100;
+        this.progressChanged = true;
         this.hideMenu();
       });
     },
@@ -297,6 +305,7 @@ export default {
               currentLocation.start.cfi
             );
             this.progress = progress * 100;
+            this.progressChanged = true;
           }
         });
       }
@@ -313,6 +322,7 @@ export default {
               currentLocation.start.cfi
             );
             this.progress = progress * 100;
+            this.progressChanged = true;
           }
         });
       }
@@ -329,8 +339,6 @@ export default {
       try {
         const storageRef = projectStorage.ref(path);
         const url = await storageRef.getDownloadURL();
-        // const res = await axios.get(url);
-        // console.log(res);
         return url; // res.data;
       } catch (error) {
         throw new Error('無法取得此書');
@@ -352,7 +360,7 @@ export default {
     },
     async updateProgress() {
       await this.$store.dispatch('updateUserBookProgress', {
-        id: this.userBookId,
+        id: this.myBook.id,
         progress: this.progress,
       });
       if (this.userMsg) {
@@ -360,6 +368,19 @@ export default {
           title: '發生錯誤',
           message: this.userMsg,
         });
+      }
+    },
+    async checkUpdates() {
+      if (this.anonymous || !this.userSetting) {
+        return;
+      }
+      if (this.progressChanged) {
+        await this.updateProgress();
+        this.progressChanged = false;
+      }
+      if (this.fontSizeOrThemeChanged) {
+        await this.patchUserSetting();
+        this.fontSizeOrThemeChanged = false;
       }
     },
     // 渲染 epub 檔案
@@ -382,6 +403,10 @@ export default {
           this.locations = this.book.locations;
           this.setProgress(this.progress);
           window.addEventListener('resize', this.resizeEpub);
+          // eslint-disable-next-line space-before-function-paren
+          this.timer = setInterval(async () => {
+            await this.checkUpdates();
+          }, 2000);
         })
         .catch(() => {
           throw new Error('無法開啟書籍');
@@ -410,24 +435,18 @@ export default {
           this.themeIndex = this.userSetting.theme;
         }
         // 取得使用者的書籍
-        const book = await this.$store.dispatch('fetchOneUserBook', {
-          uid: this.user.uid,
-          bid: this.$route.params.id,
+        this.myBook = await this.$store.dispatch('fetchOneUserBook', {
+          id: this.$route.params.id,
         });
         if (this.userMsg) {
           throw new Error(this.userMsg);
         }
-        // const vm = this;
-        // const book = this.userBooks.find(
-        //   (item) => item.bid === vm.$route.params.id
-        // );
-        if (!book || !book.read) {
+        if (!this.myBook || !this.myBook.read) {
           throw new Error('找不到這本書');
         }
-        this.bookLink = book.read;
-        this.userBookId = book.id;
-        this.title = book.title;
-        this.progress = book.progress || 0;
+        this.bookLink = this.myBook.read;
+        this.title = this.myBook.title;
+        this.progress = this.myBook.progress || 0;
         const url = await this.getBook(this.bookLink);
         await this.showEpub(url);
       } catch (error) {
@@ -466,11 +485,9 @@ export default {
       }
     }
   },
-  beforeDestroy() {
-    if (!this.anonymous && this.userSetting) {
-      this.patchUserSetting();
-      this.updateProgress();
-    }
+  async beforeDestroy() {
+    await this.checkUpdates();
+    clearInterval(this.timer);
     this.$q.loading.hide();
     window.removeEventListener('resize', this.resizeEpub);
   },

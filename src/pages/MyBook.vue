@@ -26,7 +26,7 @@
             v-for="item in boughtBooks"
             :key="item.id"
             :src="item.image"
-            @click="$router.push({ name: 'Read', params: { id: item.bid } })"
+            @click="$router.push({ name: 'Read', params: { id: item.id } })"
             style="max-width: 200px; height: 283px;"
             contain
             class="shadow-2 cursor-pointer bg-white"

@@ -11,7 +11,7 @@ export async function fetchUserBooks({ commit }, id) {
       .where('uid', '==', id)
       .get();
     if (!res.empty) {
-      const books = res.docs.map((doc) => ({ ...doc.data() }));
+      const books = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
       commit('setUserBooks', books);
       commit('setUserMsg', '');
     }
@@ -20,18 +20,16 @@ export async function fetchUserBooks({ commit }, id) {
   }
 }
 
-export async function fetchOneUserBook({ commit }, { uid, bid }) {
+export async function fetchOneUserBook({ commit }, { id }) {
   try {
-    const res = await projectFirestore
+    const doc = await projectFirestore
       .collection('userBooks')
-      .where('uid', '==', uid)
-      .where('bid', '==', bid)
+      .doc(id)
       .get();
-    if (res.empty) {
+    if (!doc.exists) {
       throw new Error('找不到這本書');
     }
-    const books = res.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    return books[0];
+    return { ...doc.data(), id: doc.id };
   } catch (error) {
     commit('setUserMsg', error.message);
     return {};
