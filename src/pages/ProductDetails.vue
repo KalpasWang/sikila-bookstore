@@ -111,7 +111,12 @@ export default {
         this.$router.push({ name: 'Login' });
       } else {
         const { uid, email, displayName } = user;
-        const { title, image, read } = this.productDetails;
+        const {
+          title,
+          image,
+          read,
+          pdf,
+        } = this.productDetails;
         const progress = 0;
         const isEnabled = false;
         await this.$store.dispatch('addNewOrder', {
@@ -122,14 +127,14 @@ export default {
           title,
           image,
           read,
+          pdf,
           progress,
           isEnabled,
         });
         if (this.productDetailsMsg) {
-          this.$q.notify({
+          this.$q.dialog({
+            title: '無法訂購',
             message: this.productDetailsMsg,
-            color: 'primary',
-            position: 'top',
           });
         } else {
           this.$q.dialog({
