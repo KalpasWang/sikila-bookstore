@@ -387,7 +387,7 @@ export default {
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
         width: '100%',
-        height: '100vh',
+        height: `${window.innerHeight}px`,
       });
       this.setFontSize(this.fontSize);
       this.setTheme(this.themeIndex);
