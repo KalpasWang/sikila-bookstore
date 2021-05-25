@@ -24,7 +24,11 @@
           <q-card-section class="col column px-1-xs">
             <div class="text-h3 q-mb-sm">{{ productDetails.title }}</div>
             <div class="text-subtitle1">{{ productDetails.author }} 編著</div>
-            <div class="text-subtitle1">{{ productDetails.price | currency }}</div>
+            <div class="text-subtitle1">
+              {{ productDetails.price | currency }}
+              (或者美元{{productDetails.priceUS | currencyUS}}，
+              人民幣{{productDetails.priceRMB | currencyRMB }})
+            </div>
             <q-card-actions class="q-mt-lg col-grow justify-end items-end q-gutter-sm">
               <q-btn
                 :to="{ name: 'Preview', params: { id: productDetails.id }}"
@@ -51,9 +55,13 @@
           </q-card-section>
 
           <q-card-section class="col column q-px-sm">
-            <div class="text-h5 text-weight-regular q-mb-sm">{{ productDetails.title }}</div>
-            <div class="text-body2 text-weight-light">{{ productDetails.author }} 編著</div>
-            <div class="text-body2 text-weight-light">{{ productDetails.price | currency }}</div>
+            <div class="text-h5 text-weight-regular q-mb-md">{{ productDetails.title }}</div>
+            <div class="text-body2 text-weight-regular">{{ productDetails.author }} 編著</div>
+            <div class="text-body2 text-weight-regular">
+              {{ productDetails.price | currency }}
+              (或者美元{{productDetails.priceUS | currencyUS}}，
+              人民幣{{productDetails.priceRMB | currencyRMB }})
+            </div>
           </q-card-section>
         </q-card-section>
 
@@ -111,12 +119,8 @@ export default {
         this.$router.push({ name: 'Login' });
       } else {
         const { uid, email, displayName } = user;
-        const {
-          title,
-          image,
-          read,
-          pdf,
-        } = this.productDetails;
+        // eslint-disable-next-line object-curly-newline
+        const { title, image, read, pdf } = this.productDetails;
         const progress = 0;
         const isEnabled = false;
         await this.$store.dispatch('addNewOrder', {

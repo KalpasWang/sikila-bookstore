@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page padding class="my-container-sm">
     <!-- content -->
     <q-btn
       :to="{ name: 'Home' }"
