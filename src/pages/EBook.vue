@@ -8,9 +8,8 @@
             <q-btn @click="$router.go(-1)" flat round dense icon="arrow_back" />
             <q-toolbar-title>{{ title }}</q-toolbar-title>
             <q-btn
+              v-if="!anonymous"
               @click="updateProgress"
-              :loading="uploading"
-              :disable="uploading"
               rounded
               outline
               dense
@@ -139,7 +138,6 @@
 import { mapGetters } from 'vuex';
 import Epub from 'epubjs';
 import { projectStorage, getCurrentUser } from 'boot/firebase.config';
-// import { updateUserSetting } from 'src/store/users/actions';
 
 export default {
   name: 'Ebook',
@@ -171,7 +169,6 @@ export default {
       themeIndex: 0,
       // 資料庫事件
       fontSizeOrThemeChanged: false,
-      uploading: false,
       // 背景主題選項
       themeList: [
         {
@@ -372,13 +369,12 @@ export default {
       }
     },
     async updateProgress() {
-      this.uploading = true;
       localStorage.setItem(`sikilaEbook-${this.myBook.id}`, this.progress);
       this.$q.notify({
         type: 'positive',
+        position: 'top',
         message: '儲存進度成功',
       });
-      this.uploading = false;
     },
     // 渲染 epub 檔案
     async showEpub(url) {
