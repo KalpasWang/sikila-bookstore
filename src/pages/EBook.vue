@@ -7,6 +7,15 @@
           <q-toolbar>
             <q-btn @click="$router.go(-1)" flat round dense icon="arrow_back" />
             <q-toolbar-title>{{ title }}</q-toolbar-title>
+            <q-btn
+              v-if="!anonymous"
+              @click="updateProgress"
+              rounded
+              outline
+              dense
+              class="q-px-xs"
+              label="儲存進度"
+            />
           </q-toolbar>
         </q-header>
       </transition>
@@ -159,9 +168,7 @@ export default {
       fontSizeMax: 36,
       themeIndex: 0,
       // 資料庫事件
-      progressChanged: false,
       fontSizeOrThemeChanged: false,
-      timer: null,
       // 背景主題選項
       themeList: [
         {
@@ -215,7 +222,6 @@ export default {
         if (value !== this.progress) {
           this.setProgress(value);
           this.progress = value;
-          this.progressChanged = true;
         }
       },
     },
@@ -252,6 +258,12 @@ export default {
         this.jumpTo(value);
       }
     },
+    async fontSizeOrThemeChanged(value) {
+      if (value && !this.anonymous && this.userSetting) {
+        await this.updateUserSetting();
+        this.fontSizeOrThemeChanged = false;
+      }
+    },
   },
   methods: {
     // 跳轉到指定的位置
@@ -262,7 +274,7 @@ export default {
           currentLocation.start.cfi
         );
         this.progress = progress * 100;
-        this.progressChanged = true;
+        this.setting = 'progress';
         this.hideMenu();
       });
     },
@@ -305,7 +317,6 @@ export default {
               currentLocation.start.cfi
             );
             this.progress = progress * 100;
-            this.progressChanged = true;
           }
         });
       }
@@ -322,7 +333,6 @@ export default {
               currentLocation.start.cfi
             );
             this.progress = progress * 100;
-            this.progressChanged = true;
           }
         });
       }
@@ -339,13 +349,13 @@ export default {
       try {
         const storageRef = projectStorage.ref(path);
         const url = await storageRef.getDownloadURL();
-        return url; // res.data;
+        return url;
       } catch (error) {
         throw new Error('無法取得此書');
       }
     },
     // 傳送使用者資料到後端
-    async patchUserSetting() {
+    async updateUserSetting() {
       await this.$store.dispatch('updateUserSetting', {
         id: this.user.uid,
         fontSize: this.fontSize,
@@ -359,29 +369,12 @@ export default {
       }
     },
     async updateProgress() {
-      await this.$store.dispatch('updateUserBookProgress', {
-        id: this.myBook.id,
-        progress: this.progress,
+      localStorage.setItem(`sikilaEbook-${this.myBook.id}`, this.progress);
+      this.$q.notify({
+        type: 'positive',
+        position: 'top',
+        message: '儲存進度成功',
       });
-      if (this.userMsg) {
-        this.$q.dialog({
-          title: '發生錯誤',
-          message: this.userMsg,
-        });
-      }
-    },
-    async checkUpdates() {
-      if (this.anonymous || !this.userSetting) {
-        return;
-      }
-      if (this.progressChanged) {
-        await this.updateProgress();
-        this.progressChanged = false;
-      }
-      if (this.fontSizeOrThemeChanged) {
-        await this.patchUserSetting();
-        this.fontSizeOrThemeChanged = false;
-      }
     },
     // 渲染 epub 檔案
     async showEpub(url) {
@@ -390,7 +383,7 @@ export default {
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
         width: '100%',
-        height: '100vh',
+        height: `${window.innerHeight}px`,
       });
       this.setFontSize(this.fontSize);
       this.setTheme(this.themeIndex);
@@ -403,10 +396,6 @@ export default {
           this.locations = this.book.locations;
           this.setProgress(this.progress);
           window.addEventListener('resize', this.resizeEpub);
-          // eslint-disable-next-line space-before-function-paren
-          this.timer = setInterval(async () => {
-            await this.checkUpdates();
-          }, 2000);
         })
         .catch(() => {
           throw new Error('無法開啟書籍');
@@ -446,7 +435,11 @@ export default {
         }
         this.bookLink = this.myBook.read;
         this.title = this.myBook.title;
-        this.progress = this.myBook.progress || 0;
+        // 讀取進度，如果有儲存進度的話
+        const progressStr = localStorage.getItem(
+          `sikilaEbook-${this.myBook.id}`
+        );
+        this.progress = +progressStr || 0;
         const url = await this.getBook(this.bookLink);
         await this.showEpub(url);
       } catch (error) {
@@ -485,9 +478,7 @@ export default {
       }
     }
   },
-  async beforeDestroy() {
-    await this.checkUpdates();
-    clearInterval(this.timer);
+  beforeDestroy() {
     this.$q.loading.hide();
     window.removeEventListener('resize', this.resizeEpub);
   },

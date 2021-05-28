@@ -22,15 +22,41 @@
     <div v-else>
       <div v-if="userBooks && userBooks.length > 0">
         <div class="row wrap justify-center q-gutter-md q-pa-xl">
-          <q-img
-            v-for="item in boughtBooks"
-            :key="item.id"
-            :src="item.image"
-            @click="$router.push({ name: 'Read', params: { id: item.id } })"
-            style="max-width: 200px; height: 283px;"
-            contain
-            class="shadow-2 cursor-pointer bg-white"
-          />
+          <!-- 書籍資訊卡片 -->
+          <q-card v-for="item in boughtBooks" :key="item.id" style="width: 200px;">
+            <q-img style="height: 283px" :src="item.image" contain />
+            <q-separator />
+
+            <q-card-actions class="q-pb-xs">
+              <q-btn
+                :to="{ name: 'Read', params: { id: item.id } }"
+                unelevated
+                size="lg"
+                color="primary"
+                class="full-width"
+              >閱讀電子書</q-btn>
+            </q-card-actions>
+
+            <q-card-actions class="q-py-xs">
+              <q-btn
+                @click="downloadFile(item.pdf)"
+                unelevated
+                size="lg"
+                color="secondary"
+                class="full-width"
+              >下載(pdf檔)</q-btn>
+            </q-card-actions>
+
+            <q-card-actions class="q-pt-xs">
+              <q-btn
+                @click="downloadFile(item.read)"
+                unelevated
+                size="lg"
+                color="accent"
+                class="full-width"
+              >下載(epub檔)</q-btn>
+            </q-card-actions>
+          </q-card>
         </div>
 
         <h3 v-if="this.orderingBooks.length" class="text-h6 text-center q-mt-lg">尚未啟用的書籍</h3>
@@ -52,7 +78,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { projectAuth, getCurrentUser } from 'boot/firebase.config';
+import { projectAuth, projectStorage, getCurrentUser } from 'boot/firebase.config';
 
 export default {
   name: 'MyBook',
@@ -102,6 +128,18 @@ export default {
         this.$q.dialog({
           title: '發生錯誤',
           message: this.userMsg,
+        });
+      }
+    },
+    async downloadFile(path) {
+      try {
+        const storageRef = projectStorage.ref(path);
+        const url = await storageRef.getDownloadURL();
+        window.location.href = url;
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
         });
       }
     },

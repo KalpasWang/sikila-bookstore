@@ -20,7 +20,29 @@
     <q-drawer v-model="leftDrawer" side="left" bordered content-class="bg-grey-2">
       <!-- QScrollArea is optional -->
       <q-scroll-area class="fit q-pa-sm">
-        <!-- Content here -->
+        <!-- 選單內容 -->
+        <q-list bordered>
+          <q-item :to="{ name: 'Admin' }" clickable v-ripple>
+            <q-item-section avatar>
+              <q-avatar color="blue" text-color="white" icon="view_list" />
+            </q-item-section>
+            <q-item-section>訂單管理</q-item-section>
+          </q-item>
+
+          <q-item :to="{ name: 'Products' }" clickable v-ripple>
+            <q-item-section avatar>
+              <q-avatar color="teal" text-color="white" icon="category" />
+            </q-item-section>
+            <q-item-section>書籍</q-item-section>
+          </q-item>
+
+          <!-- <q-item :to="{ name: 'Users'}" clickable v-ripple>
+            <q-item-section avatar>
+              <q-avatar rounded color="purple" text-color="white" icon="people_alt" />
+            </q-item-section>
+            <q-item-section>使用者</q-item-section>
+          </q-item>-->
+        </q-list>
       </q-scroll-area>
     </q-drawer>
 

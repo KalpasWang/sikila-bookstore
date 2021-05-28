@@ -4,6 +4,9 @@
       <q-toolbar class="my-container-sm">
         <q-toolbar-title>
           <h1 class="q-my-none text-h6 text-weight-bold">
+            <router-link :to="{ name: 'Home' }">
+              <img src="icons/favicon-32x32.png" alt="Icon" class="vertical-bottom q-mr-sm" />
+            </router-link>
             <span class="text-h4 text-blue text-shadow">觀音之愛</span>
             <span class="text-grey-8 text-weight-regular">&nbsp;電子書坊</span>
           </h1>

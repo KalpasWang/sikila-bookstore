@@ -193,7 +193,7 @@ export default {
       const s = diff % 60;
       const m = Math.floor(diff / 60) % 60;
       const h = Math.floor(diff / 3600) % 24;
-      const d = Math.floor(diff / 86400) % 30;
+      const d = Math.floor(diff / 86400);
       // console.log(h, m, s);
       if (s && !m && !h && !d) {
         return `${s} 秒`;
@@ -204,10 +204,7 @@ export default {
       if (h && !d) {
         return `${h} 小時`;
       }
-      if (d) {
-        return `${d} 天`;
-      }
-      return '一個月以上';
+      return `${d} 天`;
     },
   },
   async mounted() {
