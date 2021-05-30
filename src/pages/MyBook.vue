@@ -17,7 +17,7 @@
     </div>
     <h2 class="text-h4 custom-headings">我的書籍</h2>
     <div v-if="loading" class="flex flex-center">
-      <q-spinner color="primary" size="3em" :thickness="10" />
+      <q-spinner color="primary" size="5em" :thickness="5" />
     </div>
     <div v-else>
       <div v-if="userBooks && userBooks.length > 0">
@@ -78,7 +78,11 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { projectAuth, projectStorage, getCurrentUser } from 'boot/firebase.config';
+import {
+  projectAuth,
+  projectStorage,
+  getCurrentUser,
+} from 'boot/firebase.config';
 
 export default {
   name: 'MyBook',

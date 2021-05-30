@@ -83,7 +83,7 @@
     <h2 class="text-h4 custom-headings q-mt-xl">所有書籍</h2>
     <div v-if="loading" class="flex flex-center">
       <!-- 載入資料時顯示旋轉特效 -->
-      <q-spinner color="primary" size="3em" :thickness="10" />
+      <q-spinner color="primary" size="5em" :thickness="5" />
     </div>
     <div v-else>
       <div

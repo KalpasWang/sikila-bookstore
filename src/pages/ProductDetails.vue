@@ -12,7 +12,7 @@
     </q-toolbar>
 
     <div v-if="loading" class="flex justify-center q-pt-lg">
-      <q-spinner class="q-mx-auto" color="primary" size="3em" :thickness="10" />
+      <q-spinner class="q-mx-auto" color="primary" size="5em" :thickness="5" />
     </div>
     <div v-else>
       <q-card v-if="productDetails && productDetails.title" class="q-mx-auto" bordered>
