@@ -32,7 +32,7 @@
         <q-card-actions class="q-px-lg q-pt-md">
           <q-btn
             @click="login"
-            :disable="!isBtnEnabled"
+            :disable="isLoading"
             :loading="isLoading"
             unelevated
             size="lg"
@@ -41,15 +41,6 @@
             label="登入"
           />
         </q-card-actions>
-        <q-card-section class="text-center q-pa-sm">
-          <q-btn
-            :to="{ name: 'Signup' }"
-            flat
-            color="transparent"
-            size="md"
-            class="text-grey-6"
-          >還沒有帳號嗎？</q-btn>
-        </q-card-section>
       </q-card>
     </div>
   </q-page>
@@ -64,7 +55,6 @@ export default {
     return {
       email: '',
       password: '',
-      isBtnEnabled: true,
       isLoading: false,
     };
   },
@@ -72,7 +62,6 @@ export default {
     async login() {
       try {
         this.isLoading = true;
-        this.isBtnEnabled = false;
         await projectAuth.signInWithEmailAndPassword(this.email, this.password);
         this.$router.push({ name: 'MyBook' });
       } catch (err) {
@@ -82,7 +71,6 @@ export default {
         });
       } finally {
         this.isLoading = false;
-        this.isBtnEnabled = true;
       }
     },
   },

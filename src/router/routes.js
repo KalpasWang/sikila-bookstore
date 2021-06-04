@@ -63,11 +63,6 @@ const routes = [
         name: 'Login',
         component: () => import('pages/Login.vue'),
       },
-      {
-        path: 'signup',
-        name: 'Signup',
-        component: () => import('pages/Signup.vue'),
-      },
     ],
   },
   {
@@ -100,6 +95,11 @@ const routes = [
         path: 'products',
         name: 'Products',
         component: () => import('pages/ProductsBoard.vue'),
+      },
+      {
+        path: 'accounts',
+        name: 'Accounts',
+        component: () => import('pages/AccountsBoard.vue'),
       },
     ],
   },
