@@ -1,84 +1,5 @@
 <template>
   <q-page class="my-container-sm" padding>
-    <!-- banner 重點訊息 -->
-    <div class="q-my-md">
-      <q-banner rounded class="bg-primary">
-        <h4 class="text-subtitle1 q-my-none text-grey-3">購買須知（購買前請先閱讀）</h4>
-        <template v-slot:action>
-          <q-btn flat color="white" label="了解更多" @click="needToKnow = true" />
-        </template>
-      </q-banner>
-      <q-dialog v-model="needToKnow">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">購買須知（購買前請先閱讀）</div>
-          </q-card-section>
-          <q-card-section class="q-pt-none text-body1 text-weight-light">
-            <ol class="q-pl-md q-mb-sm">
-              <li class="q-mb-md">如果確定要購買書籍，請先按右上角的我的書庫，沒有帳號的情況預設會跳出登入頁面，請點選『還沒有帳號嗎？』進入註冊頁面</li>
-              <li class="q-mb-md">
-                輸入你的 Email，暱稱與6個字以上的密碼，如果註冊失敗可能是 Email
-                已經有註冊過了或是密碼少於六個字，如果是其他原因導致無法註冊，請寄信到
-                <a
-                  href="mailto:sikilabookstore@gmail.com"
-                >sikilabookstore@gmail.com</a>
-              </li>
-              <li
-                class="q-mb-md"
-              >註冊成功會跳轉到我的書庫頁面，可以看到目前沒有書籍，請再到首頁並點選你要購買的書籍的介紹頁面，點選購買，如果成功會看到一個訂購成功的通知</li>
-              <li class="q-mb-md">
-                請按照頁面上標的價錢匯款，付款方式有以下三種，付款後請填寫這份
-                <a href="#">表單</a>
-              </li>
-            </ol>
-            <ol type="a" class="q-pl-md">
-              <li>
-                <p class="text-weight-bold">國內銀行轉帳或郵局無摺存款</p>
-                <p>(無摺存款請附上存款單上的局號..例 OF - 123456 )</p>
-                <div class="q-px-md q-mb-lg">
-                  <div class="row no-wrap border">
-                    <div class="col-3 bg-grey-3">匯款郵局代號</div>
-                    <div class="col-9 q-pl-sm">700</div>
-                  </div>
-                  <div class="row no-wrap border">
-                    <div class="col-3 bg-grey-3">帳號</div>
-                    <div class="col-9 q-pl-sm">00716600060134</div>
-                  </div>
-                  <div class="row no-wrap border">
-                    <div class="col-3 bg-grey-3">戶名</div>
-                    <div class="col-9 q-pl-sm">周金融</div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <p class="text-weight-bold">Paypal 付款</p>
-                <p>（要選 『傳送』再填金額）</p>
-                <p class="q-mb-lg">
-                  <a
-                    href="https://www.paypal.me/kuanyin1999?locale.x=zh_TW"
-                    target="_blank"
-                    class="bg-primary text-white"
-                  >PayPal 付款連結</a>
-                </p>
-              </li>
-              <li>
-                <p class="text-weight-bold">中國大陸付款方式</p>
-                <p>使用支付宝或微信付款</p>
-                <div class="q-mb-xl text-center">
-                  <img src="~assets/alipay.jpg" alt="支付宝" />
-                </div>
-                <div class="q-mb-lg text-center">
-                  <img src="~assets/weixin.png" alt="微信" />
-                </div>
-              </li>
-            </ol>
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="關閉" color="primary" v-close-popup />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </div>
     <!-- 書籍列表 -->
     <h2 class="text-h4 custom-headings q-mt-xl">所有書籍</h2>
     <div v-if="loading" class="flex flex-center">
@@ -117,7 +38,7 @@
               size="lg"
               color="primary"
               class="full-width"
-            >查看更多</q-btn>
+            >書籍簡介</q-btn>
           </q-card-actions>
         </q-card>
       </div>
