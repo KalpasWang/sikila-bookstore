@@ -33,11 +33,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users" :key="user.id">
+        <tr v-for="(user, idx) in users" :key="user.id">
           <td class="text-left">{{ user.email }}</td>
           <td class="text-left">{{ user.displayName }}</td>
           <td class="text-right">
-            <q-btn round color="primary" icon="visibility" @click="fetchBooksByUserId(user.id)" />
+            <q-btn round color="primary" icon="visibility" @click="fetchBooksByUserIndex(idx)" />
           </td>
         </tr>
       </tbody>
@@ -45,7 +45,10 @@
     <q-dialog v-model="usersDialog">
       <q-card>
         <q-card-section>
-          <h4 class="text-h6 q-my-none">擁有書籍</h4>
+          <h4 class="text-h6 q-my-none">
+            擁有書籍
+            <q-spinner v-if="addBookBtnDisabled" color="primary" size="2em" />
+          </h4>
         </q-card-section>
 
         <q-separator />
@@ -60,11 +63,17 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="book in allBooks" :key="book.id">
+              <tr v-for="(book, idx) in allBooks" :key="book.id">
                 <td class="text-left">{{ book.title }}</td>
                 <td class="text-center">{{ book.isEnabled ? "O" : "X" }}</td>
                 <td class="text-right">
-                  <q-btn v-if="!book.isEnabled" color="primary" label="加入" />
+                  <q-btn
+                    v-if="!book.isEnabled"
+                    @click="addBookToUser(book.id, idx)"
+                    :disable="addBookBtnDisabled"
+                    color="primary"
+                    label="加入"
+                  />
                 </td>
               </tr>
             </tbody>
@@ -125,8 +134,10 @@ export default {
       loading: false,
       signUpBtnDisabled: false,
       users: [],
+      userIndex: -1,
       userBooks: [],
       allBooks: [],
+      addBookBtnDisabled: false,
       displayName: '',
       email: '',
       password: '',
@@ -135,7 +146,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['products', 'productsMsg']),
+    ...mapGetters(['products', 'productsMsg', 'productDetailsMsg']),
   },
   methods: {
     async fetchUsers() {
@@ -160,11 +171,12 @@ export default {
         this.loading = false;
       }
     },
-    async fetchBooksByUserId(id) {
+    async fetchBooksByUserIndex(idx) {
       try {
+        this.userIndex = idx;
         const res = await projectFirestore
           .collection('userBooks')
-          .where('uid', '==', id)
+          .where('uid', '==', this.users[this.userIndex].id)
           .get();
         if (!res.empty) {
           this.userBooks = res.docs.map((doc) => ({
@@ -182,6 +194,36 @@ export default {
           title: '發生錯誤',
           message: error.message,
         });
+      }
+    },
+    async addBookToUser(bid, idx) {
+      this.addBookBtnDisabled = true;
+      const user = this.users[this.userIndex];
+      const { id, email, displayName } = user;
+      // eslint-disable-next-line object-curly-newline
+      const { title, image, read, pdf } = this.allBooks[idx];
+      const progress = 0;
+      const isEnabled = true;
+      await this.$store.dispatch('addNewOrder', {
+        uid: id,
+        email,
+        displayName,
+        bid,
+        title,
+        image,
+        read,
+        pdf,
+        progress,
+        isEnabled,
+      });
+      this.addBookBtnDisabled = false;
+      if (this.productDetailsMsg) {
+        this.$q.dialog({
+          title: '無法加入此書籍',
+          message: this.productDetailsMsg,
+        });
+      } else {
+        this.fetchBooksByUserIndex(this.userIndex);
       }
     },
     async signup() {
