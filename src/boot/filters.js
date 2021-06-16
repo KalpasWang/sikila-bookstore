@@ -18,9 +18,9 @@ export default ({ Vue }) => {
   Vue.filter('currencyRMB', (value) => {
     const n = +value;
     if (Number.isNaN(n)) {
-      return 'RMB￥0';
+      return '￥0';
     }
-    return `RMB￥${n}`;
+    return `￥${n}`;
   });
 
   Vue.filter('date', (timestamp) => {

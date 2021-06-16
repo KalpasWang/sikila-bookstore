@@ -10,7 +10,6 @@
         :label="`${user.displayName} 的帳號`"
       >
         <div class="column no-wrap q-pa-md">
-          <div class="text-subtitle1 q-mb-xs">{{ user.email }}</div>
           <q-btn @click="logout" color="accent" label="登出" unelevated size="md" v-close-popup />
         </div>
       </q-btn-dropdown>
@@ -26,6 +25,9 @@
           <q-card v-for="item in boughtBooks" :key="item.id" style="width: 200px;">
             <q-img style="height: 283px" :src="item.image" contain />
             <q-separator />
+            <q-card-section>
+              <div class="text-body1">{{ item.title }}</div>
+            </q-card-section>
 
             <q-card-actions class="q-pb-xs">
               <q-btn

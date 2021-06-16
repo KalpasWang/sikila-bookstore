@@ -17,9 +17,9 @@
         </q-card-section>
         <q-card-section>
           <q-form class="q-px-sm q-pt-md">
-            <q-input square clearable v-model="email" type="email" label="Email">
+            <q-input square clearable v-model="displayName" type="text" label="帳號">
               <template v-slot:prepend>
-                <q-icon name="email" />
+                <q-icon name="person" />
               </template>
             </q-input>
             <q-input square clearable v-model="password" type="password" label="密碼">
@@ -53,7 +53,7 @@ export default {
   name: 'Login',
   data() {
     return {
-      email: '',
+      displayName: '',
       password: '',
       isLoading: false,
     };
@@ -62,7 +62,8 @@ export default {
     async login() {
       try {
         this.isLoading = true;
-        await projectAuth.signInWithEmailAndPassword(this.email, this.password);
+        const email = `${this.displayName}@gmail.com`;
+        await projectAuth.signInWithEmailAndPassword(email, this.password);
         this.$router.push({ name: 'MyBook' });
       } catch (err) {
         this.$q.dialog({
