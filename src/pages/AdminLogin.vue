@@ -15,9 +15,9 @@
       </q-card-section>
       <q-card-section>
         <q-form class="q-px-sm q-pt-md">
-          <q-input square clearable v-model="email" type="email" label="Email">
+          <q-input square clearable v-model="displayName" type="text" label="帳號">
             <template v-slot:prepend>
-              <q-icon name="email" />
+              <q-icon name="person" />
             </template>
           </q-input>
           <q-input square clearable v-model="password" type="password" label="密碼">
@@ -30,7 +30,7 @@
       <q-card-actions class="q-px-lg q-pt-md q-mb-lg">
         <q-btn
           @click="login"
-          :disable="!isBtnEnabled"
+          :disable="isLoading"
           :loading="isLoading"
           unelevated
           size="lg"
@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       email: '',
+      displayName: '',
       password: '',
-      isBtnEnabled: true,
       isLoading: false,
     };
   },
@@ -60,7 +60,7 @@ export default {
     async login() {
       try {
         this.isLoading = true;
-        this.isBtnEnabled = false;
+        this.email = `${this.displayName}@gmail.com`;
         const res = await projectFirestore
           .collection('admin')
           .where('email', '==', this.email)
@@ -77,7 +77,6 @@ export default {
         });
       } finally {
         this.isLoading = false;
-        this.isBtnEnabled = true;
       }
     },
   },
