@@ -27,23 +27,8 @@ async function syncUserState() {
   projectAuth.onAuthStateChanged((_user) => {
     // 如果已經有使用者的id
     if (_user && _user.uid) {
-      const { email, displayName } = _user;
-
-      projectFirestore
-        .collection('users')
-        .where('email', '==', email)
-        .get()
-        .then((res) => {
-          if (!res.empty) {
-            const uid = res.docs[0].id;
-            user = { uid, email, displayName };
-          } else {
-            user = null;
-          }
-        })
-        .catch(() => {
-          user = null;
-        });
+      const { uid, email, displayName } = _user;
+      user = { uid, email, displayName };
     } else {
       user = null;
     }

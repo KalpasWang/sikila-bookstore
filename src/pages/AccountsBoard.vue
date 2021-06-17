@@ -238,10 +238,14 @@ export default {
           throw new Error('無法註冊帳號');
         }
         await credentials.user.updateProfile({ displayName: this.displayName });
-        await projectFirestore.collection('users').add({
-          displayName: this.displayName,
-          email: this.email,
-        });
+        const { uid } = credentials.user;
+        await projectFirestore
+          .collection('users')
+          .doc(uid)
+          .set({
+            displayName: this.displayName,
+            email: this.email,
+          });
         this.fetchUsers();
         this.signUpDialog = false;
       } catch (error) {
