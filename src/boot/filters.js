@@ -10,9 +10,9 @@ export default ({ Vue }) => {
   Vue.filter('currencyUS', (value) => {
     const n = +value;
     if (Number.isNaN(n)) {
-      return 'US$0';
+      return '$0';
     }
-    return `US$${n}`;
+    return `$${n}`;
   });
 
   Vue.filter('currencyRMB', (value) => {

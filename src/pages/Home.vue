@@ -12,7 +12,7 @@
         class="row justify-center items-start q-gutter-md q-px-md"
       >
         <!-- 書籍資訊卡片 -->
-        <q-card v-for="item in products" :key="item.id" class="my-card">
+        <q-card v-for="item in filteredProducts" :key="item.id" class="my-card">
           <q-img style="height: 312px" :src="item.image" contain />
           <q-separator />
 
@@ -55,11 +55,13 @@ export default {
   data() {
     return {
       loading: true,
-      needToKnow: false,
     };
   },
   computed: {
     ...mapGetters(['products', 'productsMsg']),
+    filteredProducts() {
+      return this.products.filter((item) => item.enabled);
+    },
   },
   async mounted() {
     this.loading = true;

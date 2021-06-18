@@ -1,14 +1,7 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <q-btn
-      :to="{ name: 'Home' }"
-      rounded
-      outline
-      color="secondary"
-      label="回首頁"
-      icon="arrow_back_ios"
-    />
+    <q-btn :to="{ name: 'Home' }" rounded outline color="secondary" label="回首頁" />
     <h2 class="text-h4 custom-headings">書籍管理</h2>
     <div class="text-center q-my-md">
       <q-btn
@@ -143,14 +136,15 @@
             :rules="[ val => val && val.length > 0 || '必填']"
           />
           <q-input v-model="pdf" label="書籍PDF檔連結" lazy-rules />
+          <q-input v-model="preview" label="試閱epub檔連結" lazy-rules />
           <q-input v-model="read" label="書籍epub檔連結" lazy-rules />
           <q-toggle v-model="enabled" label="是否啟用" />
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn label="確認" :loading="isLoading" color="primary" @click="createNewProduct" />
-          <q-btn label="重置" :disable="isLoading" color="accent" @click="reset" />
-          <q-btn flat label="關閉" :disable="isLoading" color="secondary" v-close-popup />
+          <q-btn label="確認" :loading="isUploading" color="primary" @click="createNewProduct" />
+          <q-btn label="重置" :disable="isUploading" color="accent" @click="reset" />
+          <q-btn flat label="關閉" :disable="isUploading" color="secondary" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -166,6 +160,7 @@ export default {
   data() {
     return {
       loading: false,
+      isUploading: false,
       users: [],
       fetchingUsers: false,
       usersDialog: false,
@@ -178,6 +173,7 @@ export default {
       priceUS: 0,
       priceRMB: 0,
       pdf: null,
+      preview: null,
       read: null,
       enabled: false,
     };
@@ -220,6 +216,7 @@ export default {
           priceUS: this.priceUS,
           priceRMB: this.priceRMB,
           pdf: this.pdf,
+          preview: this.preview,
           read: this.read,
           enabled: this.enabled,
         });
@@ -244,6 +241,7 @@ export default {
       this.priceUS = 0;
       this.priceRMB = 0;
       this.pdf = null;
+      this.preview = null;
       this.read = null;
       this.enabled = false;
     },

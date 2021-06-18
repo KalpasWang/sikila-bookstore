@@ -20,16 +20,16 @@
     </div>
     <div v-else>
       <div v-if="userBooks && userBooks.length > 0">
-        <div class="row wrap justify-center q-gutter-md q-pa-xl">
+        <div class="row wrap justify-center items-start q-gutter-md q-pa-xl">
           <!-- 書籍資訊卡片 -->
-          <q-card v-for="item in boughtBooks" :key="item.id" style="width: 200px;">
+          <q-card v-for="item in enabledBooks" :key="item.id" style="width: 200px;">
             <q-img style="height: 283px" :src="item.image" contain />
             <q-separator />
             <q-card-section>
               <div class="text-body1">{{ item.title }}</div>
             </q-card-section>
 
-            <q-card-actions class="q-pb-xs">
+            <q-card-actions v-if="item.read" class="q-pb-xs">
               <q-btn
                 :to="{ name: 'Read', params: { id: item.id } }"
                 unelevated
@@ -39,7 +39,7 @@
               >閱讀電子書</q-btn>
             </q-card-actions>
 
-            <q-card-actions class="q-py-xs">
+            <q-card-actions v-if="item.pdf" class="q-py-xs">
               <q-btn
                 @click="downloadFile(item.pdf)"
                 unelevated
@@ -49,7 +49,7 @@
               >下載(pdf檔)</q-btn>
             </q-card-actions>
 
-            <q-card-actions class="q-pt-xs">
+            <q-card-actions v-if="item.read" class="q-pt-xs">
               <q-btn
                 @click="downloadFile(item.read)"
                 unelevated
@@ -59,18 +59,6 @@
               >下載(epub檔)</q-btn>
             </q-card-actions>
           </q-card>
-        </div>
-
-        <h3 v-if="this.orderingBooks.length" class="text-h6 text-center q-mt-lg">尚未啟用的書籍</h3>
-        <div class="row wrap justify-center q-gutter-md q-px-xl">
-          <q-img
-            v-for="item in orderingBooks"
-            :key="item.id"
-            :src="item.image"
-            style="max-width: 100px; height: 141.5px;"
-            contain
-            class="shadow-2 bg-white"
-          />
         </div>
       </div>
       <div v-else class="text-center text-h6">還沒有書籍</div>
@@ -96,11 +84,8 @@ export default {
   },
   computed: {
     ...mapGetters(['userBooks', 'userMsg']),
-    boughtBooks() {
+    enabledBooks() {
       return this.userBooks.filter((b) => b.isEnabled);
-    },
-    orderingBooks() {
-      return this.userBooks.filter((b) => !b.isEnabled);
     },
   },
   watch: {

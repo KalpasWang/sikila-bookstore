@@ -87,7 +87,7 @@ const routes = [
     beforeEnter: requireAdminAuth,
     children: [
       {
-        path: 'orders',
+        path: '',
         name: 'Admin',
         component: () => import('pages/Dashboard.vue'),
       },

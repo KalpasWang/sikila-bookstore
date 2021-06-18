@@ -29,7 +29,10 @@
               (或者美元{{productDetails.priceUS | currencyUS}}，
               人民幣{{productDetails.priceRMB | currencyRMB }})
             </div>
-            <q-card-actions class="q-mt-lg col-grow justify-end items-end q-gutter-sm">
+            <q-card-actions
+              v-if="productDetails.preview"
+              class="q-mt-lg col-grow justify-end items-end q-gutter-sm"
+            >
               <q-btn
                 :to="{ name: 'Preview', params: { id: productDetails.id }}"
                 unelevated
@@ -37,14 +40,6 @@
                 color="accent"
                 class="q-px-lg"
               >免費試閱</q-btn>
-              <q-btn
-                @click="buy(productDetails.id)"
-                :loading="btnLoading"
-                unelevated
-                size="lg"
-                color="primary"
-                class="q-px-lg"
-              >購買</q-btn>
             </q-card-actions>
           </q-card-section>
         </q-card-section>
@@ -65,7 +60,7 @@
           </q-card-section>
         </q-card-section>
 
-        <q-card-actions class="small-only q-mt-xl">
+        <q-card-actions v-if="productDetails.preview" class="small-only q-mt-md">
           <q-btn
             :to="{ name: 'Preview', params: { id: productDetails.id }}"
             unelevated
@@ -73,14 +68,6 @@
             color="accent"
             class="col"
           >免費試閱</q-btn>
-          <q-btn
-            @click="buy(productDetails.id)"
-            :loading="btnLoading"
-            unelevated
-            size="lg"
-            color="primary"
-            class="col"
-          >購買</q-btn>
         </q-card-actions>
 
         <q-separator />

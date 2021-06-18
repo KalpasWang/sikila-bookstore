@@ -1,14 +1,7 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <q-btn
-      :to="{ name: 'Home' }"
-      rounded
-      outline
-      color="secondary"
-      label="回首頁"
-      icon="arrow_back_ios"
-    />
+    <q-btn :to="{ name: 'Home' }" rounded outline color="secondary" label="回首頁" />
     <h2 class="text-h4 custom-headings">帳號管理</h2>
     <div class="text-center q-my-md">
       <q-btn
