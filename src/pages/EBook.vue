@@ -202,7 +202,6 @@ export default {
     ...mapGetters([
       'userBooks',
       'userMsg',
-      'userSetting',
       'productDetails',
       'productDetailsMsg',
     ]),
@@ -258,9 +257,9 @@ export default {
         this.jumpTo(value);
       }
     },
-    async fontSizeOrThemeChanged(value) {
-      if (value && !this.anonymous && this.userSetting) {
-        await this.updateUserSetting();
+    fontSizeOrThemeChanged(value) {
+      if (value) {
+        this.updateUserSetting();
         this.fontSizeOrThemeChanged = false;
       }
     },
@@ -354,21 +353,25 @@ export default {
         throw new Error('無法取得此書');
       }
     },
-    // 傳送使用者資料到後端
-    async updateUserSetting() {
-      await this.$store.dispatch('updateUserSetting', {
-        id: this.user.uid,
+    // 儲存使用者設定
+    updateUserSetting() {
+      const str = JSON.stringify({
         fontSize: this.fontSize,
         theme: this.themeIndex,
       });
-      if (this.userMsg) {
-        this.$q.dialog({
-          title: '發生錯誤',
-          message: this.userMsg,
-        });
+      localStorage.setItem('sikilaEbook-setting', str);
+    },
+    // 讀取使用者的設定
+    loadUserSetting() {
+      const settingStr = localStorage.getItem('sikilaEbook-setting');
+      // 套用使用者設定的字型與主題
+      if (settingStr) {
+        const userSetting = JSON.parse(settingStr);
+        this.fontSize = userSetting.fontSize;
+        this.themeIndex = userSetting.theme;
       }
     },
-    async updateProgress() {
+    updateProgress() {
       localStorage.setItem(`sikilaEbook-${this.myBook.id}`, this.progress);
       this.$q.notify({
         type: 'positive',
@@ -404,6 +407,7 @@ export default {
   },
   async mounted() {
     this.$q.loading.show();
+    this.loadUserSetting();
     if (this.$route.name === 'Read') {
       try {
         this.user = await getCurrentUser();
@@ -413,16 +417,6 @@ export default {
         }
         // 假設是有帳號的使用者
         this.anonymous = false;
-        // 取得使用者的設定
-        await this.$store.dispatch('fetchUserSetting', this.user.uid);
-        if (this.userMsg) {
-          throw new Error(this.userMsg);
-        }
-        // 套用使用者設定的自行與主題
-        if (this.userSetting.fontSize) {
-          this.fontSize = this.userSetting.fontSize;
-          this.themeIndex = this.userSetting.theme;
-        }
         // 取得使用者的書籍
         this.myBook = await this.$store.dispatch('fetchOneUserBook', {
           id: this.$route.params.id,

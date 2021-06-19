@@ -126,7 +126,7 @@ export default {
       try {
         const storageRef = projectStorage.ref(path);
         const url = await storageRef.getDownloadURL();
-        window.location.href = url;
+        window.open(url);
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',

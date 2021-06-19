@@ -22,18 +22,11 @@
       <q-scroll-area class="fit q-pa-sm">
         <!-- 選單內容 -->
         <q-list bordered>
-          <q-item :to="{ name: 'Admin' }" clickable v-ripple>
-            <q-item-section avatar>
-              <q-avatar color="blue" text-color="white" icon="view_list" />
-            </q-item-section>
-            <q-item-section>訂單管理</q-item-section>
-          </q-item>
-
           <q-item :to="{ name: 'Products' }" clickable v-ripple>
             <q-item-section avatar>
               <q-avatar color="teal" text-color="white" icon="category" />
             </q-item-section>
-            <q-item-section>書籍</q-item-section>
+            <q-item-section>書籍管理</q-item-section>
           </q-item>
 
           <q-item :to="{ name: 'Accounts'}" clickable v-ripple>

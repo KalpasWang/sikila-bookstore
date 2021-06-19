@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <q-btn :to="{ name: 'Home' }" rounded outline color="secondary" label="回首頁" />
+    <q-btn :to="{ name: 'Home' }" rounded outline color="secondary" label="回電子書坊" />
     <h2 class="text-h4 custom-headings">書籍管理</h2>
     <div class="text-center q-my-md">
       <q-btn
@@ -206,7 +206,7 @@ export default {
     },
     async createNewProduct() {
       try {
-        this.description.replace(/\n{2,}/g, '  ');
+        this.description.replace(/\n/g, '  ');
         await projectFirestore.collection('products').add({
           title: this.title,
           author: this.author,

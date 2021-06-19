@@ -89,7 +89,7 @@ const routes = [
       {
         path: '',
         name: 'Admin',
-        component: () => import('pages/Dashboard.vue'),
+        component: () => import('pages/AdminHome.vue'),
       },
       {
         path: 'products',

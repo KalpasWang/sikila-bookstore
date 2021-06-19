@@ -73,9 +73,9 @@
         <q-separator />
 
         <q-card-section class="col-12">
-          <div class="text-h5 text-center q-mb-lg max-width-1024">書籍簡介</div>
+          <div class="text-h5 text-center q-mb-lg max-width-768">書籍簡介</div>
           <div
-            class="text-body1 text-center paragraph text-weight-light max-width-1024"
+            class="text-body1 text-center paragraph text-weight-light max-width-768"
           >{{ productDetails.description }}</div>
         </q-card-section>
       </q-card>
@@ -152,8 +152,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.max-width-1024 {
-  max-width: 1024px;
+.max-width-768 {
+  max-width: 768px;
   margin-left: auto;
   margin-right: auto;
 }
