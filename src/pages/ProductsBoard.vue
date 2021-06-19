@@ -1,18 +1,21 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <q-btn
-      :to="{ name: 'Home' }"
-      rounded
-      outline
-      color="secondary"
-      label="回首頁"
-      icon="arrow_back_ios"
-    />
+    <q-btn :to="{ name: 'Home' }" rounded outline color="secondary" label="回電子書坊" />
     <h2 class="text-h4 custom-headings">書籍管理</h2>
+    <div class="text-center q-my-md">
+      <q-btn
+        rounded
+        unelevated
+        color="primary"
+        label="建立新產品"
+        icon="add"
+        @click="newProductDialog = true"
+      />
+    </div>
     <div v-if="loading" class="flex flex-center q-pt-md">
       <!-- 載入資料時顯示旋轉特效 -->
-      <q-spinner color="primary" size="3em" :thickness="10" />
+      <q-spinner color="primary" size="5em" :thickness="5" />
     </div>
     <q-markup-table>
       <thead>
@@ -76,6 +79,75 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="newProductDialog">
+      <q-card class="scroll" style="width: 300px;max-width: 90%;">
+        <q-card-section>
+          <h4 class="text-h6 text-center">增加新產品</h4>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="q-gutter-md">
+          <q-input
+            v-model="title"
+            label="產品名稱"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || '必填']"
+          />
+          <q-input
+            v-model="author"
+            label="作者"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || '必填']"
+          />
+          <q-input
+            v-model="image"
+            label="產品圖片連結"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || '必填']"
+          />
+          <q-input
+            v-model="description"
+            filled
+            type="textarea"
+            label="產品介紹"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || '必填']"
+          />
+          <q-input
+            v-model="price"
+            type="number"
+            label="產品價格"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || '必填']"
+          />
+          <q-input
+            v-model="priceUS"
+            type="number"
+            label="產品價格（美金）"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || '必填']"
+          />
+          <q-input
+            v-model="priceRMB"
+            type="number"
+            label="產品價格（人民幣）"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || '必填']"
+          />
+          <q-input v-model="pdf" label="書籍PDF檔連結" lazy-rules />
+          <q-input v-model="preview" label="試閱epub檔連結" lazy-rules />
+          <q-input v-model="read" label="書籍epub檔連結" lazy-rules />
+          <q-toggle v-model="enabled" label="是否啟用" />
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn label="確認" :loading="isUploading" color="primary" @click="createNewProduct" />
+          <q-btn label="重置" :disable="isUploading" color="accent" @click="reset" />
+          <q-btn flat label="關閉" :disable="isUploading" color="secondary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -88,9 +160,22 @@ export default {
   data() {
     return {
       loading: false,
+      isUploading: false,
       users: [],
       fetchingUsers: false,
       usersDialog: false,
+      newProductDialog: false,
+      title: '',
+      author: '',
+      description: '',
+      image: '',
+      price: 0,
+      priceUS: 0,
+      priceRMB: 0,
+      pdf: null,
+      preview: null,
+      read: null,
+      enabled: false,
     };
   },
   computed: {
@@ -118,6 +203,47 @@ export default {
         this.users = [];
       }
       this.fetchingUsers = false;
+    },
+    async createNewProduct() {
+      try {
+        this.description.replace(/\n/g, '  ');
+        await projectFirestore.collection('products').add({
+          title: this.title,
+          author: this.author,
+          image: this.image,
+          description: this.description,
+          price: this.price,
+          priceUS: this.priceUS,
+          priceRMB: this.priceRMB,
+          pdf: this.pdf,
+          preview: this.preview,
+          read: this.read,
+          enabled: this.enabled,
+        });
+        this.newProductDialog = false;
+        this.reset();
+        this.$q.dialog({
+          title: '新增產品成功',
+        });
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      }
+    },
+    reset() {
+      this.title = '';
+      this.author = '';
+      this.image = '';
+      this.description = '';
+      this.price = 0;
+      this.priceUS = 0;
+      this.priceRMB = 0;
+      this.pdf = null;
+      this.preview = null;
+      this.read = null;
+      this.enabled = false;
     },
   },
   async mounted() {

@@ -22,26 +22,19 @@
       <q-scroll-area class="fit q-pa-sm">
         <!-- 選單內容 -->
         <q-list bordered>
-          <q-item :to="{ name: 'Admin' }" clickable v-ripple>
-            <q-item-section avatar>
-              <q-avatar color="blue" text-color="white" icon="view_list" />
-            </q-item-section>
-            <q-item-section>訂單管理</q-item-section>
-          </q-item>
-
           <q-item :to="{ name: 'Products' }" clickable v-ripple>
             <q-item-section avatar>
               <q-avatar color="teal" text-color="white" icon="category" />
             </q-item-section>
-            <q-item-section>書籍</q-item-section>
+            <q-item-section>書籍管理</q-item-section>
           </q-item>
 
-          <!-- <q-item :to="{ name: 'Users'}" clickable v-ripple>
+          <q-item :to="{ name: 'Accounts'}" clickable v-ripple>
             <q-item-section avatar>
               <q-avatar rounded color="purple" text-color="white" icon="people_alt" />
             </q-item-section>
-            <q-item-section>使用者</q-item-section>
-          </q-item>-->
+            <q-item-section>帳號管理</q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -57,7 +50,7 @@
 import { projectAuth } from 'boot/firebase.config';
 
 export default {
-  name: 'AdminLogin',
+  name: 'AdminLayout',
   data() {
     return {
       leftDrawer: false,

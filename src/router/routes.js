@@ -63,11 +63,6 @@ const routes = [
         name: 'Login',
         component: () => import('pages/Login.vue'),
       },
-      {
-        path: 'signup',
-        name: 'Signup',
-        component: () => import('pages/Signup.vue'),
-      },
     ],
   },
   {
@@ -94,12 +89,17 @@ const routes = [
       {
         path: '',
         name: 'Admin',
-        component: () => import('pages/Dashboard.vue'),
+        component: () => import('pages/AdminHome.vue'),
       },
       {
         path: 'products',
         name: 'Products',
         component: () => import('pages/ProductsBoard.vue'),
+      },
+      {
+        path: 'accounts',
+        name: 'Accounts',
+        component: () => import('pages/AccountsBoard.vue'),
       },
     ],
   },

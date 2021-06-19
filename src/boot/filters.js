@@ -10,17 +10,17 @@ export default ({ Vue }) => {
   Vue.filter('currencyUS', (value) => {
     const n = +value;
     if (Number.isNaN(n)) {
-      return 'US$0';
+      return '$0';
     }
-    return `US$${n}`;
+    return `$${n}`;
   });
 
   Vue.filter('currencyRMB', (value) => {
     const n = +value;
     if (Number.isNaN(n)) {
-      return 'RMB￥0';
+      return '￥0';
     }
-    return `RMB￥${n}`;
+    return `￥${n}`;
   });
 
   Vue.filter('date', (timestamp) => {

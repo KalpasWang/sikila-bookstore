@@ -1,18 +1,11 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <q-btn
-      :to="{ name: 'Home' }"
-      rounded
-      outline
-      color="secondary"
-      label="回首頁"
-      icon="arrow_back_ios"
-    />
+    <q-btn :to="{ name: 'Home' }" rounded outline color="secondary" label="回首頁" />
     <h2 class="text-h4 custom-headings">訂單管理</h2>
     <div v-if="loading" class="flex flex-center q-pt-md">
       <!-- 載入資料時顯示旋轉特效 -->
-      <q-spinner color="primary" size="3em" :thickness="10" />
+      <q-spinner color="primary" size="5em" :thickness="5" />
     </div>
     <q-table
       v-else
