@@ -1,5 +1,5 @@
 <template>
-  <div class="window-height">
+  <div :style="`height:${documentHeight}px;`">
     <q-layout view="lHh lpr lFf" container class="shadow-2 rounded-borders">
       <!-- header -->
       <transition name="slide-up">
@@ -143,6 +143,7 @@ export default {
   name: 'Ebook',
   data() {
     return {
+      documentHeight: 0,
       // 書籍資訊
       bookLink: '',
       title: '',
@@ -407,6 +408,7 @@ export default {
   },
   async mounted() {
     this.$q.loading.show();
+    this.documentHeight = document.documentElement.clientHeight;
     this.loadUserSetting();
     if (this.$route.name === 'Read') {
       try {
