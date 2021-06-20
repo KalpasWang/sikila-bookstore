@@ -206,7 +206,7 @@ export default {
     },
     async createNewProduct() {
       try {
-        this.description.replace(/\n/g, '  ');
+        this.description.replace(/\n/g, '{n}');
         await projectFirestore.collection('products').add({
           title: this.title,
           author: this.author,
