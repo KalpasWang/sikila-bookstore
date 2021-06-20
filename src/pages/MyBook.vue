@@ -41,7 +41,9 @@
 
             <q-card-actions v-if="item.pdf" class="q-py-xs">
               <q-btn
-                @click="downloadFile(item.pdf)"
+                type="a"
+                :href="pdfUrl[item.pdf]"
+                target="_blank"
                 unelevated
                 size="lg"
                 color="secondary"
@@ -51,7 +53,9 @@
 
             <q-card-actions v-if="item.read" class="q-pt-xs">
               <q-btn
-                @click="downloadFile(item.read)"
+                type="a"
+                :href="epubUrl[item.read]"
+                target="_blank"
                 unelevated
                 size="lg"
                 color="accent"
@@ -80,6 +84,8 @@ export default {
     return {
       user: null,
       loading: false,
+      pdfUrl: {},
+      epubUrl: {},
     };
   },
   computed: {
@@ -126,12 +132,13 @@ export default {
       try {
         const storageRef = projectStorage.ref(path);
         const url = await storageRef.getDownloadURL();
-        window.open(url);
+        return url;
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',
-          message: error.message,
+          message: `無法取得 ${path} 檔案：${error.message}`,
         });
+        return '';
       }
     },
   },
@@ -139,7 +146,18 @@ export default {
     try {
       this.loading = true;
       this.user = await getCurrentUser();
-      this.fetchMyBooks();
+      await this.fetchMyBooks();
+      // 取得書籍下載連結
+      this.enabledBooks.forEach(async(book) => {
+        if (book.pdf) {
+          const url = await this.downloadFile(book.pdf);
+          this.$set(this.pdfUrl, book.pdf, url);
+        }
+        if (book.read) {
+          const url = await this.downloadFile(book.read);
+          this.$set(this.epubUrl, book.read, url);
+        }
+      });
     } catch (error) {
       this.$q.dialog({
         title: '發生錯誤',
