@@ -24,7 +24,8 @@
           <th class="text-left">書本名稱</th>
           <th class="text-left">作者</th>
           <th class="text-left">啟用狀態</th>
-          <th class="text-right">有此書的使用者</th>
+          <th class="text-center">有此書的使用者</th>
+          <th class="text-center">操作</th>
         </tr>
       </thead>
       <tbody>
@@ -35,8 +36,17 @@
           <td class="text-left">{{ item.title }}</td>
           <td class="text-left">{{ item.author }}</td>
           <td class="text-left">{{ item.enabled }}</td>
-          <td class="text-right">
-            <q-btn round color="primary" icon="people" @click="fetchUsersByBookId(item.id)" />
+          <td class="text-center">
+            <q-btn
+              round
+              color="secondary"
+              icon="people"
+              size="sm"
+              @click="fetchUsersByBookId(item.id)"
+            />
+          </td>
+          <td class="text-center">
+            <q-btn color="primary" label="刪除" size="sm" @click="DeleteProductById(item.id)" />
           </td>
         </tr>
       </tbody>
@@ -182,6 +192,17 @@ export default {
     ...mapGetters(['products', 'productsMsg']),
   },
   methods: {
+    async fetchProducts() {
+      this.loading = true;
+      await this.$store.dispatch('fetchProducts');
+      if (this.productsMsg) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: this.productsMsg,
+        });
+      }
+      this.loading = false;
+    },
     async fetchUsersByBookId(id) {
       this.usersDialog = true;
       this.fetchingUsers = true;
@@ -204,9 +225,21 @@ export default {
       }
       this.fetchingUsers = false;
     },
+    async DeleteProductById(id) {
+      try {
+        const docRef = projectFirestore.collection('products').doc(id);
+        await docRef.delete();
+        this.fetchProducts();
+      } catch (error) {
+        this.$q.dialog({
+          title: '發生錯誤',
+          message: error.message,
+        });
+      }
+    },
     async createNewProduct() {
       try {
-        this.description.replace(/\n/g, '{n}');
+        this.description = this.description.replace(/\n/g, '{n}');
         await projectFirestore.collection('products').add({
           title: this.title,
           author: this.author,
@@ -246,16 +279,8 @@ export default {
       this.enabled = false;
     },
   },
-  async mounted() {
-    this.loading = true;
-    await this.$store.dispatch('fetchProducts');
-    if (this.productsMsg) {
-      this.$q.dialog({
-        title: '發生錯誤',
-        message: this.productsMsg,
-      });
-    }
-    this.loading = false;
+  mounted() {
+    this.fetchProducts();
   },
 };
 </script>

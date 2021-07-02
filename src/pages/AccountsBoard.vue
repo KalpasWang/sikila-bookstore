@@ -30,7 +30,13 @@
           <td class="text-left">{{ user.email }}</td>
           <td class="text-left">{{ user.displayName }}</td>
           <td class="text-right">
-            <q-btn round color="primary" icon="visibility" @click="fetchBooksByUserIndex(idx)" />
+            <q-btn
+              round
+              size="sm"
+              color="primary"
+              icon="visibility"
+              @click="fetchBooksByUserIndex(idx)"
+            />
           </td>
         </tr>
       </tbody>
@@ -66,6 +72,13 @@
                     :disable="addBookBtnDisabled"
                     color="primary"
                     label="加入"
+                  />
+                  <q-btn
+                    v-else
+                    @click="DeleteBookFromUser(idx)"
+                    :disable="addBookBtnDisabled"
+                    color="primary"
+                    label="刪除"
                   />
                 </td>
               </tr>
@@ -139,7 +152,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['products', 'productsMsg', 'productDetailsMsg']),
+    ...mapGetters(['products', 'productsMsg', 'productDetailsMsg', 'userMsg']),
   },
   methods: {
     async fetchUsers() {
@@ -214,6 +227,20 @@ export default {
         this.$q.dialog({
           title: '無法加入此書籍',
           message: this.productDetailsMsg,
+        });
+      } else {
+        this.fetchBooksByUserIndex(this.userIndex);
+      }
+    },
+    async DeleteBookFromUser(idx) {
+      this.addBookBtnDisabled = true;
+      const { id } = this.allBooks[idx];
+      await this.$store.dispatch('deleteUserOrder', id);
+      this.addBookBtnDisabled = false;
+      if (this.userMsg) {
+        this.$q.dialog({
+          title: '無法刪除此書籍',
+          message: this.userMsg,
         });
       } else {
         this.fetchBooksByUserIndex(this.userIndex);
