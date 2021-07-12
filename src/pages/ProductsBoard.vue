@@ -29,7 +29,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in products" :key="item.id">
+        <tr v-for="(item) in products" :key="item.id">
           <td class="text-left">
             <img :src="item.image" :alt="item.title" style="width:70px;" class="border" />
           </td>
@@ -46,7 +46,12 @@
             />
           </td>
           <td class="text-center">
-            <q-btn color="primary" label="刪除" size="sm" @click="DeleteProductById(item.id)" />
+            <q-btn
+              color="primary"
+              label="刪除"
+              size="sm"
+              @click="DeleteProductById(item.id, item.title)"
+            />
           </td>
         </tr>
       </tbody>
@@ -189,7 +194,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['products', 'productsMsg']),
+    ...mapGetters(['products', 'productsMsg', 'userMsg']),
   },
   methods: {
     async fetchProducts() {
@@ -225,14 +230,37 @@ export default {
       }
       this.fetchingUsers = false;
     },
-    async DeleteProductById(id) {
+    async DeleteProductById(id, title) {
       try {
-        const docRef = projectFirestore.collection('products').doc(id);
-        await docRef.delete();
-        this.fetchProducts();
+        this.$q
+          .dialog({
+            title: '確認操作',
+            message: `是否確認要刪除 ${title} 這項產品以及每個帳號擁有的書籍呢？`,
+            cancel: true,
+            persistent: true,
+          })
+          // eslint-disable-next-line space-before-function-paren
+          .onOk(async () => {
+            const docRef = projectFirestore.collection('products').doc(id);
+            await docRef.delete();
+            const res = await projectFirestore
+              .collection('userBooks')
+              .where('bid', '==', id)
+              .get();
+            // console.log(res);
+            if (!res.empty) {
+              res.docs.forEach(async(doc) => {
+                await this.$store.dispatch('deleteUserOrder', doc.id);
+                if (this.userMsg) {
+                  throw new Error(this.userMsg);
+                }
+              });
+            }
+            this.fetchProducts();
+          });
       } catch (error) {
         this.$q.dialog({
-          title: '發生錯誤',
+          title: '發生錯誤，無法刪除此書',
           message: error.message,
         });
       }
@@ -258,6 +286,7 @@ export default {
         this.$q.dialog({
           title: '新增產品成功',
         });
+        this.fetchProducts();
       } catch (error) {
         this.$q.dialog({
           title: '發生錯誤',
