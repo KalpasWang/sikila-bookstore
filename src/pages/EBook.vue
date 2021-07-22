@@ -1,5 +1,5 @@
 <template>
-  <div :style="`height:${documentHeight}px;`">
+  <div class="ebook-height">
     <q-layout view="lHh lpr lFf" container class="shadow-2 rounded-borders">
       <!-- header -->
       <transition name="slide-up">
@@ -143,7 +143,6 @@ export default {
   name: 'Ebook',
   data() {
     return {
-      documentHeight: 0,
       // 書籍資訊
       bookLink: '',
       title: '',
@@ -342,7 +341,13 @@ export default {
     resizeEpub() {
       const width = window.innerWidth;
       const height = window.innerHeight;
+      this.setFullHeight();
       this.rendition.resize(width, height);
+    },
+    // 搭配 css 設定高度滿版
+    setFullHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
     },
     // 回傳書籍的連結
     async getBook(path) {
@@ -384,10 +389,12 @@ export default {
     async showEpub(url) {
       // 生成 Ebook
       this.book = new Epub(url);
+      // 搭配 css 設定高度滿版
+      this.setFullHeight();
       // 生成 Rendtion
       this.rendition = this.book.renderTo('read', {
         width: '100%',
-        height: `${document.documentElement.clientHeight}px`,
+        height: `${window.innerHeight}px`,
       });
       this.setFontSize(this.fontSize);
       this.setTheme(this.themeIndex);
@@ -408,7 +415,6 @@ export default {
   },
   async mounted() {
     this.$q.loading.show();
-    this.documentHeight = document.documentElement.clientHeight;
     this.loadUserSetting();
     if (this.$route.name === 'Read') {
       try {
@@ -484,5 +490,10 @@ export default {
 <style lang="scss">
 .border-blue {
   border: 3px solid #2196f3;
+}
+
+.ebook-height {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
 }
 </style>
